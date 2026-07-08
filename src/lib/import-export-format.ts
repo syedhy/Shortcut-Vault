@@ -6,10 +6,20 @@ import {
   type Shortcut,
   type ShortcutExportFile,
 } from "../types/shortcut";
-import { formatShortcutDisplay } from "./shortcut-format";
+import { formatShortcutDisplay, normalizeKey, normalizeModifiers } from "./shortcut-format";
 
 export const EXPORT_FORMAT = "shortcut-vault";
 export const EXPORT_VERSION = 1;
+
+export type PreparedImport = {
+  shortcuts: Shortcut[];
+  regeneratedIds: number;
+};
+
+type PrepareImportOptions = {
+  generateId?: () => string;
+  now?: () => string;
+};
 
 export function createExportFile(shortcuts: Shortcut[]): ShortcutExportFile {
   return {
@@ -18,6 +28,45 @@ export function createExportFile(shortcuts: Shortcut[]): ShortcutExportFile {
     exportedAt: new Date().toISOString(),
     shortcuts,
   };
+}
+
+export function prepareImportedShortcuts(
+  importedShortcuts: Shortcut[],
+  existingShortcuts: Shortcut[],
+  options: PrepareImportOptions = {},
+): PreparedImport {
+  const generateId = options.generateId ?? (() => crypto.randomUUID());
+  const now = options.now ?? (() => new Date().toISOString());
+  const seenIds = new Set(existingShortcuts.map((shortcut) => shortcut.id));
+  let regeneratedIds = 0;
+
+  const shortcuts = importedShortcuts.map((shortcut) => {
+    let id = shortcut.id;
+    let wasRegenerated = false;
+
+    while (seenIds.has(id)) {
+      id = generateId();
+      wasRegenerated = true;
+    }
+
+    if (wasRegenerated) {
+      regeneratedIds += 1;
+    }
+
+    seenIds.add(id);
+
+    return {
+      ...shortcut,
+      id,
+      modifiers: normalizeModifiers(shortcut.modifiers),
+      key: normalizeKey(shortcut.key),
+      shortcutDisplay: formatShortcutDisplay(shortcut.modifiers, shortcut.key),
+      sourceType: "custom" as const,
+      updatedAt: now(),
+    };
+  });
+
+  return { shortcuts, regeneratedIds };
 }
 
 export function validateExportFile(value: unknown): ShortcutExportFile {

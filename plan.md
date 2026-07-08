@@ -243,6 +243,19 @@ Scope:
 - [x] Add existing-owner selection in Add/Edit Shortcut.
 - [x] Canonicalize typed owner names against existing bundled and custom owners.
 
+### Phase 14: Import Conflict Preparation Hardening
+
+Status: Complete
+
+Scope:
+
+- [x] Extract duplicate ID preparation from Raycast storage import flow.
+- [x] Test importing unique IDs without regeneration.
+- [x] Test ID conflicts with existing custom shortcuts.
+- [x] Test duplicate IDs inside a single import file.
+- [x] Test generated ID collision retries.
+- [x] Keep `main` synchronized with completed work before starting the phase, then continue on `work`.
+
 ## Decisions Made
 
 - Use Raycast `LocalStorage` for custom shortcuts because it is local, supported by Raycast, and does not introduce sync or account dependencies.
@@ -272,6 +285,7 @@ Scope:
 - Explicitly enable Raycast native `List` filtering whenever `onSearchTextChange` is used. Raycast otherwise treats filtering as extension-owned, which can make typing appear to do nothing.
 - Use custom shortcut search for the main shortcut lists because Raycast's native fuzzy search cannot guarantee multi-term AND queries like `Figma custom cmd p`.
 - Canonicalize owner names from the current default and custom shortcut dataset so typed owners like `figma` reuse `Figma` instead of creating duplicate owner spellings.
+- Keep import conflict preparation pure and tested separately from Raycast `LocalStorage`; the command layer only reads, prepares, and saves.
 
 ## Tradeoffs
 
@@ -1059,6 +1073,59 @@ Tradeoffs:
 
 - Search ranking is deterministic and simple rather than Raycast-fuzzy. This makes chained narrowing predictable.
 - Existing-owner selection is implemented with Raycast's native dropdown plus editable text field because Raycast forms do not expose a true editable combobox in this API version.
+
+Next phase:
+
+- Continue development hardening from real usage feedback.
+- Keep screenshots, deployment, and publishing for the user's final workflow.
+
+## Phase 14 Completion Notes
+
+Completed on 2026-07-08.
+
+Implemented:
+
+- Created `prepareImportedShortcuts` as the pure import conflict-preparation step.
+- Updated `importShortcuts` to reuse the pure preparation function before saving.
+- Added import tests for unique imports, conflicts with existing custom shortcuts, duplicate IDs within a single import file, and generated-ID retry behavior.
+- Updated README import/export notes.
+- Synchronized completed work to `main` before starting this phase, then returned to `work`.
+
+Created files:
+
+- None.
+
+Modified files:
+
+- `README.md`
+- `plan.md`
+- `scripts/test-import-export-format.ts`
+- `src/lib/import-export-format.ts`
+- `src/lib/import-export.ts`
+
+Deleted files:
+
+- None.
+
+Verification:
+
+- `npm run test` passed.
+- `npm run typecheck` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run dev` started successfully, compiled all seven command entry points, and was stopped after verification.
+
+Expected behavior:
+
+- Imports with unique shortcut IDs keep those IDs.
+- Imports with IDs that conflict with existing custom shortcuts receive new IDs.
+- Imports with duplicate IDs inside the same file receive new IDs after the first occurrence.
+- Generated IDs are retried if they collide.
+- Imported shortcuts are still prepended before existing custom shortcuts.
+
+Tradeoffs:
+
+- This phase tests the import preparation logic rather than mocking Raycast `LocalStorage`. That keeps tests stable and dependency-light while covering the risky conflict behavior.
 
 Next phase:
 

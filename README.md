@@ -232,6 +232,7 @@ Imports validate:
 - Source type
 
 If an imported shortcut ID conflicts with an existing custom shortcut, Shortcut Vault generates a new ID and preserves the imported shortcut.
+Duplicate IDs within the same import file are also regenerated safely.
 
 ## Local Storage
 
@@ -328,3 +329,8 @@ The screenshot files are placeholders and should be replaced with user-provided 
 
 - Added robust chained shortcut search.
 - Added existing-owner selection and owner canonicalization in Add/Edit Shortcut.
+
+### Phase 14
+
+- Hardened import duplicate ID preparation.
+- Added tests for existing conflicts, in-file duplicate IDs, and generated-ID retries.

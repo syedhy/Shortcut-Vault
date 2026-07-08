@@ -2,8 +2,11 @@ import { environment } from "@raycast/api";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { ShortcutExportFile } from "../types/shortcut";
-import { createExportFile, validateExportFile } from "./import-export-format";
-import { formatShortcutDisplay, normalizeKey, normalizeModifiers } from "./shortcut-format";
+import {
+  createExportFile,
+  prepareImportedShortcuts,
+  validateExportFile,
+} from "./import-export-format";
 import { getCustomShortcuts, saveCustomShortcuts } from "./storage";
 export {
   EXAMPLE_EXPORT,
@@ -51,29 +54,9 @@ export async function readImportFile(filePath: string): Promise<ShortcutExportFi
 export async function importShortcuts(filePath: string): Promise<ImportResult> {
   const exportFile = await readImportFile(filePath);
   const existing = await getCustomShortcuts();
-  const seenIds = new Set(existing.map((shortcut) => shortcut.id));
-  let regeneratedIds = 0;
+  const imported = prepareImportedShortcuts(exportFile.shortcuts, existing);
 
-  const imported = exportFile.shortcuts.map((shortcut) => {
-    const id = seenIds.has(shortcut.id) ? crypto.randomUUID() : shortcut.id;
-    if (id !== shortcut.id) {
-      regeneratedIds += 1;
-    }
+  await saveCustomShortcuts([...imported.shortcuts, ...existing]);
 
-    seenIds.add(id);
-
-    return {
-      ...shortcut,
-      id,
-      modifiers: normalizeModifiers(shortcut.modifiers),
-      key: normalizeKey(shortcut.key),
-      shortcutDisplay: formatShortcutDisplay(shortcut.modifiers, shortcut.key),
-      sourceType: "custom" as const,
-      updatedAt: new Date().toISOString(),
-    };
-  });
-
-  await saveCustomShortcuts([...imported, ...existing]);
-
-  return { importedCount: imported.length, regeneratedIds };
+  return { importedCount: imported.shortcuts.length, regeneratedIds: imported.regeneratedIds };
 }

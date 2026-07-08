@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {
   createExportFile,
   EXAMPLE_EXPORT,
+  prepareImportedShortcuts,
   validateExportFile,
 } from "../src/lib/import-export-format";
 import type { Shortcut, ShortcutExportFile } from "../src/types/shortcut";
@@ -79,6 +80,56 @@ run("rejects default shortcuts in import files", () => {
 
 run("rejects invalid timestamp fields", () => {
   assert.throws(() => validateExportFile(withShortcut({ createdAt: "not a date" })), /valid date/);
+});
+
+run("prepares imports without regenerating unique IDs", () => {
+  const result = prepareImportedShortcuts([baseShortcut], [], { now });
+
+  assert.equal(result.regeneratedIds, 0);
+  assert.equal(result.shortcuts[0]?.id, baseShortcut.id);
+  assert.equal(result.shortcuts[0]?.updatedAt, now());
+});
+
+run("regenerates IDs that conflict with existing custom shortcuts", () => {
+  const result = prepareImportedShortcuts([baseShortcut], [baseShortcut], {
+    generateId: () => "new-imported-id",
+    now,
+  });
+
+  assert.equal(result.regeneratedIds, 1);
+  assert.equal(result.shortcuts[0]?.id, "new-imported-id");
+});
+
+run("regenerates duplicate IDs inside the same import file", () => {
+  const duplicate = { ...baseShortcut, commandName: "Duplicate Command" };
+  const result = prepareImportedShortcuts([baseShortcut, duplicate], [], {
+    generateId: () => "second-imported-id",
+    now,
+  });
+
+  assert.equal(result.regeneratedIds, 1);
+  assert.deepEqual(
+    result.shortcuts.map((shortcut) => shortcut.id),
+    [baseShortcut.id, "second-imported-id"],
+  );
+});
+
+run("retries generated IDs until they are unique", () => {
+  const generatedIds = ["existing-id", "unique-imported-id"];
+  const result = prepareImportedShortcuts(
+    [baseShortcut],
+    [
+      { ...baseShortcut, id: baseShortcut.id },
+      { ...baseShortcut, id: "existing-id" },
+    ],
+    {
+      generateId: () => generatedIds.shift() ?? "unexpected-id",
+      now,
+    },
+  );
+
+  assert.equal(result.regeneratedIds, 1);
+  assert.equal(result.shortcuts[0]?.id, "unique-imported-id");
 });
 
 function run(name: string, test: () => void) {
