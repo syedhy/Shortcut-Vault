@@ -88,6 +88,10 @@ export function validateExportFile(value: unknown): ShortcutExportFile {
     throw new Error("The import file is missing a shortcuts array.");
   }
 
+  if (value.shortcuts.length === 0) {
+    throw new Error("The import file does not contain any shortcuts.");
+  }
+
   return {
     format: EXPORT_FORMAT,
     version: EXPORT_VERSION,

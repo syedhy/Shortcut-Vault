@@ -64,6 +64,19 @@ run("rejects missing shortcut arrays", () => {
   );
 });
 
+run("rejects empty shortcut arrays", () => {
+  assert.throws(
+    () =>
+      validateExportFile({
+        format: "shortcut-vault",
+        version: 1,
+        exportedAt: now(),
+        shortcuts: [],
+      }),
+    /does not contain any shortcuts/,
+  );
+});
+
 run("rejects unsupported modifiers", () => {
   assert.throws(
     () => validateExportFile(withShortcut({ modifiers: ["hyper"] })),

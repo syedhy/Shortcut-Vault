@@ -69,7 +69,7 @@ Creates a custom shortcut with:
 - Scope
 - Optional notes
 
-Typed owner names are canonicalized when they match an existing owner, so `figma` saves as `Figma` instead of creating a second owner spelling. Matching owners show a colored owner token in the form before saving. If the owner does not exist yet, Shortcut Vault saves it as a new owner.
+Typed owner names are canonicalized when they match an existing owner, so `figma` saves as `Figma` instead of creating a second owner spelling. The form shows a non-interactive owner match preview before saving. If the owner does not exist yet, Shortcut Vault saves it as a new owner.
 
 If the same shortcut already exists for the same owner and scope, Shortcut Vault asks before saving the duplicate.
 
@@ -91,11 +91,9 @@ Starts with an information page that explains the supported format, validation r
 
 ## Screenshots
 
-Final screenshots should replace these placeholders before store submission.
+Final store screenshots should be captured from the real Raycast UI before submission.
 
-![Search placeholder](./assets/screenshot-search-placeholder.png)
-
-![Add shortcut placeholder](./assets/screenshot-add-shortcut-placeholder.png)
+Do not use generated or placeholder screenshots for store submission. Use Raycast Window Capture and save the final images to the extension metadata folder when preparing the store PR.
 
 ## Installation
 
@@ -251,10 +249,27 @@ The source image and generated reference variant are preserved for future design
 - `icon-source.png`
 - `icon-regenerated-reference.png`
 
-The screenshot files are placeholders and should be replaced with user-provided screenshots before store submission:
+The screenshot files are local placeholders only and should not be used as final store screenshots:
 
 - `screenshot-search-placeholder.png`
 - `screenshot-add-shortcut-placeholder.png`
+
+## Final Store Handoff
+
+Development is complete up to the point where human-provided store assets and publishing credentials are needed.
+
+Before submission:
+
+- Run `npm install` if dependencies are not installed.
+- Run `npm run test`.
+- Run `npm run typecheck`.
+- Run `npm run lint`.
+- Run `npm run build`.
+- Run `npm run dev` and manually check each command in Raycast.
+- Capture real screenshots with Raycast Window Capture.
+- Save final screenshots to Raycast metadata when preparing the store submission.
+- Review `assets/icon.png` in light and dark Raycast appearances.
+- Publish through Raycast's store flow when ready.
 
 ## Roadmap
 
@@ -342,5 +357,12 @@ The screenshot files are placeholders and should be replaced with user-provided 
 
 ### Phase 16
 
-- Added a colored existing-owner confirmation token in Add/Edit Shortcut.
-- Kept new owner creation in the same single owner text field.
+- Reworked existing-owner feedback.
+- Superseded in Phase 17 after the token-style preview proved too interactive-looking.
+
+### Phase 17
+
+- Replaced the owner token with non-interactive preview text.
+- Hardened empty export and empty import behavior.
+- Avoided imported ID collisions with bundled default shortcuts.
+- Added final store-readiness docs, license, and changelog.

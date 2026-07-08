@@ -270,7 +270,7 @@ Scope:
 
 ### Phase 16: Existing Owner Match Polish
 
-Status: Complete
+Status: Superseded by Phase 17
 
 Scope:
 
@@ -278,6 +278,25 @@ Scope:
 - [x] Show a stronger visual cue when typed owner text matches an existing owner.
 - [x] Avoid reintroducing a separate existing-owner selector.
 - [x] Preserve automatic canonical owner saving.
+
+Outcome:
+
+- The controlled tag token was rejected because it looked interactive. Phase 17 replaced it with non-interactive preview text.
+
+### Phase 17: Final Pre-Submission Hardening
+
+Status: Complete
+
+Scope:
+
+- [x] Replace the owner match token with non-interactive preview text.
+- [x] Keep typed existing-owner canonicalization.
+- [x] Prevent empty custom shortcut exports from being offered as an action.
+- [x] Reject empty import files with a useful error.
+- [x] Avoid imported shortcut ID collisions with bundled default shortcuts.
+- [x] Remove unnecessary root list navigation title overrides.
+- [x] Add final license and changelog files.
+- [x] Update final user handoff documentation.
 
 ## Decisions Made
 
@@ -310,7 +329,7 @@ Scope:
 - Canonicalize owner names from the current default and custom shortcut dataset so typed owners like `figma` reuse `Figma` instead of creating duplicate owner spellings.
 - Keep import conflict preparation pure and tested separately from Raycast `LocalStorage`; the command layer only reads, prepares, and saves.
 - Keep Add/Edit Shortcut owner entry as one field. Raycast's current form API provides TextField and Dropdown, but not a native editable combobox that supports arbitrary text plus dropdown suggestions in the same control.
-- Show existing owner matches as a controlled Raycast tag token in the form because `Form.Description` cannot render colored bubbles and Raycast forms do not expose arbitrary styled inline preview content.
+- Keep existing owner matches as non-interactive `Form.Description` text. Raycast's form description API does not support colored inline text, and using token/dropdown-like components for preview state creates misleading affordances.
 
 ## Tradeoffs
 
@@ -325,19 +344,18 @@ Scope:
 - The import/export tests use Node's built-in `assert` plus a small TypeScript compile step instead of adding a full test framework. This keeps dependencies minimal, but the harness is intentionally narrow.
 - Duplicate detection is scoped to custom shortcuts with the same normalized owner, scope, key, and modifiers. It does not block duplicates across different owners or scopes.
 - Custom search gives up Raycast's native ranking in exchange for deterministic chained filtering across every shortcut field.
+- Empty exports are not offered as an action. This avoids producing technically valid but user-unhelpful empty files.
+- Empty imports are rejected. Shortcut Vault's official format is for transferable custom shortcuts, and an empty file usually indicates the wrong export was selected.
 
 ## Deferred Ideas
 
-- Additional shortcut databases: Chrome, Arc, Notion, Figma, Xcode, Apple Mail, Calendar, Terminal, iTerm, Slack, Linear.
+- Additional shortcut databases: Arc, Apple Mail, Calendar, iTerm, Linear, and other high-confidence sources.
 - Bulk edit custom shortcuts.
 - Optional duplicate detection views.
-- Better README screenshots after Phase 2 polish.
 - Contribution guide for shortcut database JSON files.
 
 ## Future Improvements
 
-- Add schema validation tooling for default shortcut JSON files.
-- Add tests for import/export validation and normalization logic.
 - Add richer keyboard key normalization for international keyboard layouts.
 - Add per-owner grouping or sections if large databases become hard to scan.
 - Add migration helpers if the local custom shortcut format changes.
@@ -1211,9 +1229,11 @@ Next phase:
 
 Completed on 2026-07-08.
 
-Implemented:
+Superseded on 2026-07-09 by Phase 17 after the token-style owner match preview was rejected for looking interactive.
 
-- Added a colored `Owner Match` token preview when typed owner text exactly matches an existing owner.
+Attempted:
+
+- Added a token-style `Owner Match` preview when typed owner text exactly matched an existing owner.
 - Kept Add/Edit Shortcut to one `Owner App/Webapp` text field for both existing and new owners.
 - Preserved canonical saving so existing owner casing and owner type are reused.
 - Updated README and project plan wording for the new owner-match behavior.
@@ -1240,18 +1260,85 @@ Verification:
 - `npm run build` passed.
 - `npm run dev` started successfully, compiled all seven command entry points, and was stopped after verification.
 
-Expected behavior:
+Observed behavior:
 
-- Typing an existing owner such as `figma` shows a colored owner token for `Figma`.
-- Submitting still saves the shortcut to the canonical existing owner.
-- Typing a new owner still shows creation text and saves a new owner name.
-- Blank owner still saves as `General`.
+- Typing an existing owner such as `figma` showed a token-style preview for `Figma`.
+- The preview looked like an interactive picker, so it was not acceptable as final UI.
+- Submitting still saved the shortcut to the canonical existing owner.
+- Typing a new owner still showed creation text and saved a new owner name.
+- Blank owner still saved as `General`.
 
 Tradeoffs:
 
-- Raycast forms do not support arbitrary colored inline text previews or a true editable combobox. A controlled native tag token gives the existing-owner match a clearer visual cue without splitting the owner entry back into two controls.
+- Raycast forms do not support arbitrary colored inline text previews or a true editable combobox. The token attempt was visually stronger but created a misleading affordance, so Phase 17 replaced it with plain preview text.
 
 Next phase:
 
 - Continue development hardening from real usage feedback.
 - Keep screenshots, deployment, and publishing for the user's final workflow.
+
+## Phase 17 Completion Notes
+
+Completed on 2026-07-09.
+
+Implemented:
+
+- Replaced the rejected owner token preview with non-interactive `Owner Match` description text.
+- Kept existing owner canonicalization and new owner creation in one `Owner App/Webapp` field.
+- Prevented empty exports from offering export/copy actions; the empty export screen now guides users to add a shortcut.
+- Rejected empty import files with a clear validation error.
+- Checked imported shortcut IDs against both existing custom shortcuts and bundled default shortcuts before saving.
+- Made shortcut list item keys source-aware to avoid UI key collisions.
+- Removed root list navigation title overrides so Raycast can use command titles naturally.
+- Added `LICENSE` and `CHANGELOG.md`.
+- Updated README with final store handoff steps and clarified that screenshots must be real Raycast captures.
+
+Created files:
+
+- `CHANGELOG.md`
+- `LICENSE`
+
+Modified files:
+
+- `README.md`
+- `plan.md`
+- `scripts/test-import-export-format.ts`
+- `src/components/ShortcutForm.tsx`
+- `src/components/ShortcutList.tsx`
+- `src/export-shortcuts.tsx`
+- `src/lib/import-export-format.ts`
+- `src/lib/import-export.ts`
+- `src/manage-custom-shortcuts.tsx`
+- `src/search-custom-shortcuts.tsx`
+- `src/search-default-shortcuts.tsx`
+- `src/search-shortcuts.tsx`
+
+Deleted files:
+
+- None.
+
+Verification:
+
+- `npm run test` passed.
+- `npm run typecheck` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run dev` started successfully, compiled all seven command entry points, and was stopped after verification.
+
+Expected behavior:
+
+- Typing an existing owner such as `figma` shows plain preview text: `Existing owner: Figma • Mac App`.
+- The owner match preview no longer looks like a dropdown, picker, or editable token control.
+- Empty export state no longer lets users export an empty JSON file.
+- Empty import files fail with a useful message instead of importing zero shortcuts.
+- Imported custom shortcut IDs cannot collide with bundled default shortcut IDs.
+
+Tradeoffs:
+
+- The owner match preview is text-only because Raycast `Form.Description` does not support colored inline text. This keeps the UI honest and non-interactive.
+- Empty imports are rejected even though an empty JSON envelope could be structurally valid. This better matches the product promise that import/export is for actual shortcut transfer.
+
+Remaining work:
+
+- User must capture and add final real screenshots.
+- User must run the final Raycast publish/store flow when ready.

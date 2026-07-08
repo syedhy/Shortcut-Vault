@@ -1,5 +1,5 @@
 import { ShortcutList } from "./components/ShortcutList";
 
 export default function Command() {
-  return <ShortcutList filter="all" title="Search Shortcuts" />;
+  return <ShortcutList filter="all" />;
 }

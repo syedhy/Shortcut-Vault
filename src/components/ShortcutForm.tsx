@@ -205,23 +205,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
           }))
         }
       />
-      {ownerMatch ? (
-        <Form.TagPicker
-          id="ownerMatchPreview"
-          title="Owner Match"
-          info="This typed owner already exists and will be reused with its saved owner type."
-          value={[ownerMatch.ownerName]}
-          onChange={() => undefined}
-        >
-          <Form.TagPicker.Item
-            value={ownerMatch.ownerName}
-            title={`${ownerMatch.ownerName} • Existing ${OWNER_TYPE_LABELS[ownerMatch.ownerType]}`}
-            icon={{ source: Icon.Circle, tintColor: getOwnerTypeColor(ownerMatch.ownerType) }}
-          />
-        </Form.TagPicker>
-      ) : (
-        <Form.Description title="Owner Match" text={ownerStatus} />
-      )}
+      <Form.Description title="Owner Match" text={ownerStatus} />
       <Form.Dropdown
         id="scope"
         title="Scope"
@@ -310,7 +294,7 @@ function getOwnerStatus(ownerName: string, ownerMatch: ShortcutOwnerOption | und
   }
 
   if (ownerMatch) {
-    return `Uses existing owner: ${ownerMatch.ownerName}.`;
+    return `Existing owner: ${ownerMatch.ownerName} • ${OWNER_TYPE_LABELS[ownerMatch.ownerType]}`;
   }
 
   return `Creates owner: ${trimmedOwnerName}.`;
@@ -339,18 +323,5 @@ function getModifierColor(modifier: ShortcutModifier): Color.ColorLike {
       return Color.Orange;
     case "fn":
       return Color.SecondaryText;
-  }
-}
-
-function getOwnerTypeColor(ownerType: OwnerType): Color.ColorLike {
-  switch (ownerType) {
-    case "mac-app":
-      return Color.Blue;
-    case "webapp":
-      return Color.Green;
-    case "system":
-      return Color.Orange;
-    case "other":
-      return Color.Purple;
   }
 }

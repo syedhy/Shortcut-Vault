@@ -9,6 +9,7 @@ import {
   showToast,
 } from "@raycast/api";
 import { useEffect, useState } from "react";
+import { ShortcutForm } from "./components/ShortcutForm";
 import { createExportFile, writeExportFile } from "./lib/import-export";
 import { getCustomShortcuts } from "./lib/storage";
 
@@ -96,17 +97,23 @@ export default function Command() {
       markdown={markdown}
       actions={
         <ActionPanel>
-          <ActionPanel.Section title="Export">
-            <Action title="Export JSON" icon={Icon.Download} onAction={exportToFile} />
-            <Action title="Copy Export JSON" icon={Icon.Clipboard} onAction={copyExportJson} />
-            {lastExportPath ? (
-              <Action
-                title="Show Export in Finder"
-                icon={Icon.Finder}
-                onAction={() => showInFinder(lastExportPath)}
-              />
-            ) : null}
-          </ActionPanel.Section>
+          {hasShortcuts ? (
+            <ActionPanel.Section title="Export">
+              <Action title="Export JSON" icon={Icon.Download} onAction={exportToFile} />
+              <Action title="Copy Export JSON" icon={Icon.Clipboard} onAction={copyExportJson} />
+              {lastExportPath ? (
+                <Action
+                  title="Show Export in Finder"
+                  icon={Icon.Finder}
+                  onAction={() => showInFinder(lastExportPath)}
+                />
+              ) : null}
+            </ActionPanel.Section>
+          ) : (
+            <ActionPanel.Section title="Create">
+              <Action.Push title="Add Shortcut" icon={Icon.Plus} target={<ShortcutForm />} />
+            </ActionPanel.Section>
+          )}
         </ActionPanel>
       }
     />

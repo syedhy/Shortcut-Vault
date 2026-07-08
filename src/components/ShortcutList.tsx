@@ -26,13 +26,12 @@ import { ShortcutForm } from "./ShortcutForm";
 
 type Props = {
   filter: ShortcutFilter;
-  title: string;
   intent?: "search" | "manage";
 };
 
 type ViewFilterValue = "all" | `source:${SourceType}` | `scope:${ScopeType}` | `owner:${string}`;
 
-export function ShortcutList({ filter, title, intent = "search" }: Props) {
+export function ShortcutList({ filter, intent = "search" }: Props) {
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
@@ -146,7 +145,6 @@ export function ShortcutList({ filter, title, intent = "search" }: Props) {
 
   return (
     <List
-      navigationTitle={title}
       searchBarPlaceholder="Search command, keys, owner, scope, or source..."
       searchText={searchText}
       isLoading={isLoading}
@@ -170,7 +168,7 @@ export function ShortcutList({ filter, title, intent = "search" }: Props) {
       />
       {displayedShortcuts.map((shortcut) => (
         <List.Item
-          key={shortcut.id}
+          key={`${shortcut.sourceType}:${shortcut.id}`}
           title={shortcut.commandName}
           subtitle={getShortcutSubtitle(shortcut)}
           accessories={getShortcutAccessories(shortcut)}

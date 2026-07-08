@@ -7,6 +7,7 @@ import {
   prepareImportedShortcuts,
   validateExportFile,
 } from "./import-export-format";
+import { getDefaultShortcuts } from "./default-shortcuts";
 import { getCustomShortcuts, saveCustomShortcuts } from "./storage";
 export {
   EXAMPLE_EXPORT,
@@ -54,7 +55,10 @@ export async function readImportFile(filePath: string): Promise<ShortcutExportFi
 export async function importShortcuts(filePath: string): Promise<ImportResult> {
   const exportFile = await readImportFile(filePath);
   const existing = await getCustomShortcuts();
-  const imported = prepareImportedShortcuts(exportFile.shortcuts, existing);
+  const imported = prepareImportedShortcuts(exportFile.shortcuts, [
+    ...existing,
+    ...getDefaultShortcuts(),
+  ]);
 
   await saveCustomShortcuts([...imported.shortcuts, ...existing]);
 
