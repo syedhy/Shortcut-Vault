@@ -45,11 +45,18 @@ Phase 1 includes:
 - VS Code
 - Gmail Webapp
 
-Phase 3 adds:
+Expanded bundled coverage includes:
 
+- App Store
+- Calendar
 - Chrome
 - Figma
+- Freeform
+- macOS
+- Mail
 - Notion
+- Notes
+- Reminders
 - Slack
 - Terminal
 - Xcode
@@ -144,6 +151,8 @@ npm run generate-data
 ```
 
 The generator runs database validation first, so invalid shortcut files fail fast before they reach the extension bundle.
+
+The bundled database currently contains 215 default shortcuts across 18 owners.
 
 ## Adding New Shortcut Databases
 
@@ -374,3 +383,10 @@ Before submission:
 - Clarified that scope describes where a shortcut works, not what owns it.
 - Stopped showing owner kind in the Add/Edit owner match preview.
 - Treated named global custom shortcuts as app-owned shortcuts instead of generic Other shortcuts.
+
+### Phase 19
+
+- Expanded the bundled default library to 215 shortcuts across 18 owners.
+- Added official Apple/macOS shortcut datasets for macOS, Mail, Calendar, Notes, Reminders, App Store, and Freeform.
+- Made owner/app name tags use one consistent muted color.
+- Capped broad search rendering for snappier scrolling while preserving full-library search.

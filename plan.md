@@ -312,6 +312,18 @@ Scope:
 - [x] Remove owner kind from Add/Edit Shortcut owner match preview.
 - [x] Add focused owner-kind inference tests.
 
+### Phase 19: Default Library Expansion and Search Responsiveness
+
+Status: Complete
+
+Scope:
+
+- [x] Add official-source macOS shortcut coverage.
+- [x] Add official-source Apple app shortcut coverage.
+- [x] Regenerate the bundled default shortcut dataset.
+- [x] Keep owner/app name tag colors consistent across all owners.
+- [x] Limit broad search list rendering so scrolling stays responsive as the library grows.
+
 ## Decisions Made
 
 - Use Raycast `LocalStorage` for custom shortcuts because it is local, supported by Raycast, and does not introduce sync or account dependencies.
@@ -345,6 +357,8 @@ Scope:
 - Keep import conflict preparation pure and tested separately from Raycast `LocalStorage`; the command layer only reads, prepares, and saves.
 - Keep Add/Edit Shortcut owner entry as one field. Raycast's current form API provides TextField and Dropdown, but not a native editable combobox that supports arbitrary text plus dropdown suggestions in the same control.
 - Keep existing owner matches as non-interactive `Form.Description` text. Raycast's form description API does not support colored inline text, and using token/dropdown-like components for preview state creates misleading affordances.
+- Use one muted owner tag color for all owner/app names so search result metadata is visually consistent. Source and scope tags still carry their own stable colors.
+- Cap rendered search results for broad queries while still searching the full loaded library. This keeps initial search screens snappy after database expansion.
 
 ## Tradeoffs
 
@@ -361,6 +375,7 @@ Scope:
 - Custom search gives up Raycast's native ranking in exchange for deterministic chained filtering across every shortcut field.
 - Empty exports are not offered as an action. This avoids producing technically valid but user-unhelpful empty files.
 - Empty imports are rejected. Shortcut Vault's official format is for transferable custom shortcuts, and an empty file usually indicates the wrong export was selected.
+- Broad search lists show a limited number of rows. Users can still reach any bundled shortcut by typing a narrower query, owner, scope, source, or key combination.
 
 ## Deferred Ideas
 
@@ -1411,6 +1426,78 @@ Expected behavior:
 Tradeoffs:
 
 - Owner kind is still retained internally for import/export, search, and future filtering, but Add/Edit avoids showing it where it can be confused with scope.
+
+Next:
+
+- Final user screenshot capture and Raycast publishing steps remain the only expected human-owned tasks.
+
+## Phase 19 Completion Notes
+
+Completed on 2026-07-09.
+
+Implemented:
+
+- Added `macOS` default shortcuts sourced from Apple Support's Mac keyboard shortcuts article.
+- Added `Mail`, `Calendar`, `Notes`, `Reminders`, `App Store`, and `Freeform` default shortcut datasets from official Apple user guides.
+- Expanded bundled default coverage from 76 shortcuts across 11 datasets to 215 shortcuts across 18 datasets.
+- Regenerated `src/data/generated-default-shortcuts.ts`.
+- Changed owner/app name result tags to one consistent muted color.
+- Kept Default and Custom source tags consistently colored by source type.
+- Kept Global/App/Webapp scope tags consistently colored by scope.
+- Limited rendered search results for search commands: initial broad views show a smaller set, and typed searches render a larger capped set while still searching the full library.
+
+Created files:
+
+- `src/data/default-shortcuts/app-store.json`
+- `src/data/default-shortcuts/calendar.json`
+- `src/data/default-shortcuts/freeform.json`
+- `src/data/default-shortcuts/macos.json`
+- `src/data/default-shortcuts/mail.json`
+- `src/data/default-shortcuts/notes.json`
+- `src/data/default-shortcuts/reminders.json`
+
+Modified files:
+
+- `CHANGELOG.md`
+- `README.md`
+- `plan.md`
+- `src/components/ShortcutList.tsx`
+- `src/data/generated-default-shortcuts.ts`
+
+Deleted files:
+
+- None.
+
+Verification:
+
+- `npm run test` passed.
+- `npm run typecheck` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run dev` started successfully, compiled all seven command entry points, and was stopped after verification.
+
+Expected behavior:
+
+- Owner/app name tags use the same muted color for every owner.
+- Default source tags remain blue, and Custom source tags remain purple.
+- Scope tags remain stable by scope.
+- Search commands no longer render every shortcut row at once.
+- Typing still searches the full default and custom library.
+- Search Default Shortcuts includes 215 bundled shortcuts across 18 owners.
+
+Sources used:
+
+- Apple Support: Mac keyboard shortcuts.
+- Apple Support: Keyboard shortcuts in Mail on Mac.
+- Apple Support: Keyboard shortcuts in Calendar on Mac.
+- Apple Support: Keyboard shortcuts and gestures in Notes on Mac.
+- Apple Support: Keyboard shortcuts in Reminders on Mac.
+- Apple Support: Keyboard shortcuts and gestures in App Store on Mac.
+- Apple Support: Keyboard shortcuts and gestures in Freeform on Mac.
+
+Tradeoffs:
+
+- Search rendering is capped for responsiveness, so very broad queries show a representative subset. Narrowing by owner, command, source, scope, or shortcut keys remains the intended way to reach any shortcut quickly.
 
 Next:
 

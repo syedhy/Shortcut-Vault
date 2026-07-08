@@ -31,6 +31,9 @@ type Props = {
 
 type ViewFilterValue = "all" | `source:${SourceType}` | `scope:${ScopeType}` | `owner:${string}`;
 
+const INITIAL_SEARCH_RESULT_LIMIT = 50;
+const ACTIVE_SEARCH_RESULT_LIMIT = 120;
+
 export function ShortcutList({ filter, intent = "search" }: Props) {
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,10 +75,16 @@ export function ShortcutList({ filter, intent = "search" }: Props) {
     [shortcuts, viewFilter],
   );
 
-  const displayedShortcuts = useMemo(
-    () => searchShortcuts(filteredShortcuts, searchText),
-    [filteredShortcuts, searchText],
-  );
+  const displayedShortcuts = useMemo(() => {
+    const results = searchShortcuts(filteredShortcuts, searchText);
+
+    if (intent === "manage") {
+      return results;
+    }
+
+    const limit = searchText.trim() ? ACTIVE_SEARCH_RESULT_LIMIT : INITIAL_SEARCH_RESULT_LIMIT;
+    return results.slice(0, limit);
+  }, [filteredShortcuts, intent, searchText]);
 
   const activeFilterLabel = getViewFilterLabel(viewFilter);
   const hasActiveViewFilter = viewFilter !== "all";
@@ -359,7 +368,7 @@ function getShortcutAccessories(shortcut: Shortcut): List.Item.Accessory[] {
     {
       tag: {
         value: shortcut.ownerName,
-        color: getOwnerTagColor(shortcut),
+        color: getOwnerTagColor(),
       },
       tooltip: "Owner app or webapp",
     },
@@ -380,17 +389,8 @@ function getShortcutAccessories(shortcut: Shortcut): List.Item.Accessory[] {
   ];
 }
 
-function getOwnerTagColor(shortcut: Shortcut): Color.ColorLike {
-  switch (shortcut.ownerType) {
-    case "webapp":
-      return Color.Green;
-    case "system":
-      return Color.Yellow;
-    case "other":
-      return Color.SecondaryText;
-    case "mac-app":
-      return Color.Magenta;
-  }
+function getOwnerTagColor(): Color.ColorLike {
+  return Color.SecondaryText;
 }
 
 function getScopeTagColor(shortcut: Shortcut): Color.ColorLike {
