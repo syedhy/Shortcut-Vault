@@ -143,6 +143,7 @@ export function ShortcutList({ filter, title, intent = "search" }: Props) {
       navigationTitle={title}
       searchBarPlaceholder="Search command, keys, owner, scope, or source..."
       isLoading={isLoading}
+      filtering
       onSearchTextChange={setSearchText}
       searchBarAccessory={
         shortcuts.length > 0 ? (
@@ -153,7 +154,6 @@ export function ShortcutList({ filter, title, intent = "search" }: Props) {
           />
         ) : undefined
       }
-      throttle
     >
       <List.EmptyView
         icon={Icon.Keyboard}

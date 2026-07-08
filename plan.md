@@ -219,6 +219,17 @@ Scope:
 - [x] Document accepted deviations introduced by later user requests.
 - [x] Re-run validation, typecheck, lint, build, and Raycast dev compile.
 
+### Phase 12: Search Filtering Regression Fix
+
+Status: Complete
+
+Scope:
+
+- [x] Restore native Raycast search filtering in shortcut lists.
+- [x] Keep search text tracking for polished empty-state copy.
+- [x] Preserve source/scope/owner dropdown filtering.
+- [x] Verify build, lint, typecheck, tests, and Raycast dev compile.
+
 ## Decisions Made
 
 - Use Raycast `LocalStorage` for custom shortcuts because it is local, supported by Raycast, and does not introduce sync or account dependencies.
@@ -245,6 +256,7 @@ Scope:
 - Display shortcut modifiers in Command-first order to match the product examples and the way users commonly search for shortcuts.
 - Treat blank owner input saving as `General` as an accepted product change from later user direction, superseding the original prompt's required owner field while preserving a concrete owner in stored data.
 - Confirm duplicate custom shortcuts instead of blocking them. Legitimate duplicate key combinations can exist across contexts, but accidental duplicates should be visible before saving.
+- Explicitly enable Raycast native `List` filtering whenever `onSearchTextChange` is used. Raycast otherwise treats filtering as extension-owned, which can make typing appear to do nothing.
 
 ## Tradeoffs
 
@@ -923,3 +935,53 @@ Next phase:
 
 - Store-readiness final pass with user-provided screenshots when available.
 - Optional broader storage/import integration tests if a Raycast API mocking approach is added.
+
+## Phase 12 Completion Notes
+
+Completed on 2026-07-08.
+
+Implemented:
+
+- Fixed Search Shortcuts, Search Default Shortcuts, Search Custom Shortcuts, and Manage Custom Shortcuts search input behavior.
+- Added explicit native Raycast `List` filtering while keeping `onSearchTextChange` for empty-state text.
+- Removed unnecessary search throttling from the shared shortcut list so empty-state feedback updates immediately.
+- Kept dropdown filtering by source, scope, and owner unchanged.
+- Kept screenshots deferred.
+
+Created files:
+
+- None.
+
+Modified files:
+
+- `plan.md`
+- `src/components/ShortcutList.tsx`
+
+Deleted files:
+
+- None.
+
+Verification:
+
+- `npm run test` passed.
+- `npm run typecheck` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run dev` started successfully, compiled all seven command entry points, and was stopped after verification.
+
+Expected behavior:
+
+- Typing in Search Shortcuts immediately filters default and custom shortcuts.
+- Typing in Search Default Shortcuts immediately filters bundled shortcuts.
+- Typing in Search Custom Shortcuts immediately filters user shortcuts.
+- Filtering still matches command name, shortcut keys, owner, scope, and source through Raycast native title/keyword indexing.
+- Pressing Enter on a visible shortcut still copies the shortcut keys.
+
+Tradeoffs:
+
+- Search remains Raycast-native rather than custom-filtered in React. This keeps ranking, keyboard behavior, and responsiveness aligned with Raycast.
+
+Next phase:
+
+- Continue development-hardening passes only where user testing exposes real issues.
+- Keep deployment, screenshots, and publishing for the user's final store-submission workflow.
