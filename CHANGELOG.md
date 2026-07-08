@@ -11,3 +11,4 @@
 - Expanded the bundled default shortcut library to 215 shortcuts across 18 owners.
 - Made owner/app name tags visually consistent across search results.
 - Capped broad search result rendering to keep large shortcut lists responsive.
+- Pruned test-only files and placeholder/source-only assets from the production-ready tree.

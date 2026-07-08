@@ -100,7 +100,7 @@ Starts with an information page that explains the supported format, validation r
 
 Final store screenshots should be captured from the real Raycast UI before submission.
 
-Do not use generated or placeholder screenshots for store submission. Use Raycast Window Capture and save the final images to the extension metadata folder when preparing the store PR.
+Use Raycast Window Capture and save the final images to the extension metadata folder when preparing the store PR.
 
 ## Installation
 
@@ -116,15 +116,15 @@ Then open Raycast and run one of the Shortcut Vault commands.
 ```bash
 npm run validate-data
 npm run generate-data
-npm test
 npm run typecheck
 npm run lint
 npm run build
+npm run verify
 ```
 
 `npm run build` runs the Raycast production build validation with `ray build -e dist`.
 `npm run validate-data` checks every bundled shortcut database for required fields, supported values, and duplicate IDs before generated data is written.
-`npm test` validates bundled shortcut databases and runs focused import/export format checks.
+`npm run verify` runs the production readiness checks without test-only source files.
 
 This project intentionally does not include GitHub Actions, CI/CD workflows, release automation, deployment pipelines, or publish scripts.
 
@@ -255,16 +255,6 @@ The extension icon is wired to:
 
 - `icon.png`
 
-The source image and generated reference variant are preserved for future design review:
-
-- `icon-source.png`
-- `icon-regenerated-reference.png`
-
-The screenshot files are local placeholders only and should not be used as final store screenshots:
-
-- `screenshot-search-placeholder.png`
-- `screenshot-add-shortcut-placeholder.png`
-
 ## Final Store Handoff
 
 Development is complete up to the point where human-provided store assets and publishing credentials are needed.
@@ -272,10 +262,11 @@ Development is complete up to the point where human-provided store assets and pu
 Before submission:
 
 - Run `npm install` if dependencies are not installed.
-- Run `npm run test`.
+- Run `npm run validate-data`.
 - Run `npm run typecheck`.
 - Run `npm run lint`.
 - Run `npm run build`.
+- Run `npm run verify`.
 - Run `npm run dev` and manually check each command in Raycast.
 - Capture real screenshots with Raycast Window Capture.
 - Save final screenshots to Raycast metadata when preparing the store submission.

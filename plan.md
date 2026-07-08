@@ -24,10 +24,6 @@ The default database is intentionally file-based so future shortcut sets can be 
 ```text
 assets/
   icon.png
-  icon-regenerated-reference.png
-  icon-source.png
-  screenshot-add-shortcut-placeholder.png
-  screenshot-search-placeholder.png
 src/
   add-shortcut.tsx
   export-shortcuts.tsx
@@ -40,6 +36,9 @@ src/
   data/default-shortcuts/
   lib/
   types/
+scripts/
+  generate-default-shortcuts.mjs
+  validate-default-shortcuts.mjs
 README.md
 package.json
 tsconfig.json
@@ -324,6 +323,21 @@ Scope:
 - [x] Keep owner/app name tag colors consistent across all owners.
 - [x] Limit broad search list rendering so scrolling stays responsive as the library grows.
 
+### Phase 20: Production Pruning
+
+Status: Complete
+
+Scope:
+
+- [x] Remove test-only TypeScript files.
+- [x] Remove test-only TypeScript config.
+- [x] Remove placeholder screenshot assets.
+- [x] Remove source/reference-only icon assets.
+- [x] Keep the real extension icon.
+- [x] Keep data generation and validation scripts required by the data-driven architecture.
+- [x] Update package scripts for production verification.
+- [x] Update README and plan for the pruned production surface.
+
 ## Decisions Made
 
 - Use Raycast `LocalStorage` for custom shortcuts because it is local, supported by Raycast, and does not introduce sync or account dependencies.
@@ -392,12 +406,9 @@ Scope:
 
 ## Remaining Work
 
-- Replace placeholder screenshots with user-provided screenshots before store submission.
-- Expand focused tests as import/export behavior grows.
+- Capture and add final Raycast Store screenshots.
 - Review package metadata once the final Raycast Store author is known.
 - Continue deepening shortcut databases when additional high-confidence shortcut sources are available.
-- Consider a full test runner only if future behavior needs broader component or storage tests.
-- Add broader storage-level tests only if the project adopts a Raycast API mocking approach.
 
 ## Phase 1 Completion Notes
 
@@ -1502,3 +1513,60 @@ Tradeoffs:
 Next:
 
 - Final user screenshot capture and Raycast publishing steps remain the only expected human-owned tasks.
+
+## Phase 20 Completion Notes
+
+Completed on 2026-07-09.
+
+Implemented:
+
+- Removed focused TypeScript test files from `scripts/`.
+- Removed `tsconfig.test.json`.
+- Removed placeholder screenshot assets.
+- Removed source/reference-only icon assets.
+- Kept `assets/icon.png` as the only production image asset.
+- Kept `scripts/generate-default-shortcuts.mjs` and `scripts/validate-default-shortcuts.mjs` because they protect the production shortcut database and preserve the JSON-first architecture.
+- Removed deleted test scripts from `package.json`.
+- Added `npm run verify` for production readiness checks.
+- Updated README and plan to remove references to deleted current assets and test commands.
+
+Deleted files:
+
+- `assets/icon-regenerated-reference.png`
+- `assets/icon-source.png`
+- `assets/screenshot-add-shortcut-placeholder.png`
+- `assets/screenshot-search-placeholder.png`
+- `scripts/test-import-export-format.ts`
+- `scripts/test-owner-type.ts`
+- `scripts/test-shortcut-search.ts`
+- `tsconfig.test.json`
+
+Modified files:
+
+- `CHANGELOG.md`
+- `README.md`
+- `package.json`
+- `plan.md`
+
+Verification:
+
+- `npm run validate-data` passed.
+- `npm run typecheck` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run verify` passed.
+- `npm run dev` started successfully, compiled all seven command entry points, and was stopped after verification.
+
+Expected behavior:
+
+- The repository no longer contains test-only source files or placeholder screenshot assets.
+- Production build, lint, typecheck, and data validation still work.
+- The real extension icon remains at `assets/icon.png`.
+
+Tradeoffs:
+
+- Data generation and validation scripts remain because removing them would weaken the shortcut database workflow and make future data-only expansion more error-prone.
+
+Next:
+
+- User-owned final steps are screenshot capture, metadata review, and Raycast Store submission.
