@@ -1,0 +1,49 @@
+{
+  "ownerName": "Gmail",
+  "ownerType": "webapp",
+  "sourceUrl": "https://support.google.com/mail/answer/6594",
+  "shortcuts": [
+    {
+      "id": "compose",
+      "commandName": "Compose",
+      "modifiers": [],
+      "key": "C",
+      "scope": "webapp"
+    },
+    {
+      "id": "search-mail",
+      "commandName": "Search Mail",
+      "modifiers": [],
+      "key": "/",
+      "scope": "webapp"
+    },
+    {
+      "id": "reply",
+      "commandName": "Reply",
+      "modifiers": [],
+      "key": "R",
+      "scope": "webapp"
+    },
+    {
+      "id": "reply-all",
+      "commandName": "Reply All",
+      "modifiers": [],
+      "key": "A",
+      "scope": "webapp"
+    },
+    {
+      "id": "forward",
+      "commandName": "Forward",
+      "modifiers": [],
+      "key": "F",
+      "scope": "webapp"
+    },
+    {
+      "id": "archive",
+      "commandName": "Archive",
+      "modifiers": [],
+      "key": "E",
+      "scope": "webapp"
+    }
+  ]
+}

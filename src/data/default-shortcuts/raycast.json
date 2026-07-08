@@ -1,0 +1,42 @@
+{
+  "ownerName": "Raycast",
+  "ownerType": "mac-app",
+  "sourceUrl": "https://manual.raycast.com/hotkeys",
+  "shortcuts": [
+    {
+      "id": "open-raycast",
+      "commandName": "Open Raycast",
+      "modifiers": ["option"],
+      "key": "Space",
+      "scope": "global"
+    },
+    {
+      "id": "open-extensions",
+      "commandName": "Open Extensions",
+      "modifiers": ["command"],
+      "key": ",",
+      "scope": "app"
+    },
+    {
+      "id": "copy-share-link",
+      "commandName": "Copy Share Link",
+      "modifiers": ["command", "shift"],
+      "key": ".",
+      "scope": "app"
+    },
+    {
+      "id": "toggle-favorites",
+      "commandName": "Toggle Favorites",
+      "modifiers": ["command", "shift"],
+      "key": "F",
+      "scope": "app"
+    },
+    {
+      "id": "preferences",
+      "commandName": "Open Preferences",
+      "modifiers": ["command"],
+      "key": ",",
+      "scope": "app"
+    }
+  ]
+}

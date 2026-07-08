@@ -1,0 +1,63 @@
+{
+  "ownerName": "Notion",
+  "ownerType": "webapp",
+  "sourceUrl": "https://www.notion.com/help/keyboard-shortcuts",
+  "shortcuts": [
+    {
+      "id": "new-page",
+      "commandName": "New Page",
+      "modifiers": ["command"],
+      "key": "N",
+      "scope": "webapp"
+    },
+    {
+      "id": "search-or-jump",
+      "commandName": "Search or Jump to Page",
+      "modifiers": ["command"],
+      "key": "P",
+      "scope": "webapp"
+    },
+    {
+      "id": "go-back",
+      "commandName": "Go Back",
+      "modifiers": ["command"],
+      "key": "[",
+      "scope": "webapp"
+    },
+    {
+      "id": "go-forward",
+      "commandName": "Go Forward",
+      "modifiers": ["command"],
+      "key": "]",
+      "scope": "webapp"
+    },
+    {
+      "id": "bold",
+      "commandName": "Bold",
+      "modifiers": ["command"],
+      "key": "B",
+      "scope": "webapp"
+    },
+    {
+      "id": "italic",
+      "commandName": "Italic",
+      "modifiers": ["command"],
+      "key": "I",
+      "scope": "webapp"
+    },
+    {
+      "id": "underline",
+      "commandName": "Underline",
+      "modifiers": ["command"],
+      "key": "U",
+      "scope": "webapp"
+    },
+    {
+      "id": "toggle-sidebar",
+      "commandName": "Toggle Sidebar",
+      "modifiers": ["command"],
+      "key": "\\",
+      "scope": "webapp"
+    }
+  ]
+}

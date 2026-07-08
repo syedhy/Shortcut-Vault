@@ -1,0 +1,49 @@
+{
+  "ownerName": "Finder",
+  "ownerType": "mac-app",
+  "sourceUrl": "https://support.apple.com/guide/mac-help/keyboard-shortcuts-mchlp2262/mac",
+  "shortcuts": [
+    {
+      "id": "new-finder-window",
+      "commandName": "New Finder Window",
+      "modifiers": ["command"],
+      "key": "N",
+      "scope": "app"
+    },
+    {
+      "id": "new-folder",
+      "commandName": "New Folder",
+      "modifiers": ["command", "shift"],
+      "key": "N",
+      "scope": "app"
+    },
+    {
+      "id": "get-info",
+      "commandName": "Get Info",
+      "modifiers": ["command"],
+      "key": "I",
+      "scope": "app"
+    },
+    {
+      "id": "duplicate",
+      "commandName": "Duplicate Selected Item",
+      "modifiers": ["command"],
+      "key": "D",
+      "scope": "app"
+    },
+    {
+      "id": "move-to-trash",
+      "commandName": "Move to Trash",
+      "modifiers": ["command"],
+      "key": "Delete",
+      "scope": "app"
+    },
+    {
+      "id": "show-view-options",
+      "commandName": "Show View Options",
+      "modifiers": ["command"],
+      "key": "J",
+      "scope": "app"
+    }
+  ]
+}

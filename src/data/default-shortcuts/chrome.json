@@ -1,0 +1,63 @@
+{
+  "ownerName": "Chrome",
+  "ownerType": "mac-app",
+  "sourceUrl": "https://support.google.com/accessibility/answer/157179",
+  "shortcuts": [
+    {
+      "id": "new-window",
+      "commandName": "New Window",
+      "modifiers": ["command"],
+      "key": "N",
+      "scope": "app"
+    },
+    {
+      "id": "new-incognito-window",
+      "commandName": "New Incognito Window",
+      "modifiers": ["command", "shift"],
+      "key": "N",
+      "scope": "app"
+    },
+    {
+      "id": "new-tab",
+      "commandName": "New Tab",
+      "modifiers": ["command"],
+      "key": "T",
+      "scope": "app"
+    },
+    {
+      "id": "reopen-closed-tab",
+      "commandName": "Reopen Closed Tab",
+      "modifiers": ["command", "shift"],
+      "key": "T",
+      "scope": "app"
+    },
+    {
+      "id": "open-location",
+      "commandName": "Open Location",
+      "modifiers": ["command"],
+      "key": "L",
+      "scope": "app"
+    },
+    {
+      "id": "reload-page",
+      "commandName": "Reload Page",
+      "modifiers": ["command"],
+      "key": "R",
+      "scope": "app"
+    },
+    {
+      "id": "find",
+      "commandName": "Find",
+      "modifiers": ["command"],
+      "key": "F",
+      "scope": "app"
+    },
+    {
+      "id": "open-downloads",
+      "commandName": "Open Downloads",
+      "modifiers": ["command", "shift"],
+      "key": "J",
+      "scope": "app"
+    }
+  ]
+}

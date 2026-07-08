@@ -1,0 +1,63 @@
+{
+  "ownerName": "Terminal",
+  "ownerType": "mac-app",
+  "sourceUrl": "https://support.apple.com/guide/terminal/keyboard-shortcuts-trmlshtcts/mac",
+  "shortcuts": [
+    {
+      "id": "new-window",
+      "commandName": "New Window",
+      "modifiers": ["command"],
+      "key": "N",
+      "scope": "app"
+    },
+    {
+      "id": "new-tab",
+      "commandName": "New Tab",
+      "modifiers": ["command"],
+      "key": "T",
+      "scope": "app"
+    },
+    {
+      "id": "close-window-or-tab",
+      "commandName": "Close Window or Tab",
+      "modifiers": ["command"],
+      "key": "W",
+      "scope": "app"
+    },
+    {
+      "id": "find",
+      "commandName": "Find",
+      "modifiers": ["command"],
+      "key": "F",
+      "scope": "app"
+    },
+    {
+      "id": "clear-screen",
+      "commandName": "Clear Screen",
+      "modifiers": ["command"],
+      "key": "K",
+      "scope": "app"
+    },
+    {
+      "id": "split-pane",
+      "commandName": "Split Pane",
+      "modifiers": ["command"],
+      "key": "D",
+      "scope": "app"
+    },
+    {
+      "id": "bigger-text",
+      "commandName": "Bigger Text",
+      "modifiers": ["command"],
+      "key": "+",
+      "scope": "app"
+    },
+    {
+      "id": "smaller-text",
+      "commandName": "Smaller Text",
+      "modifiers": ["command"],
+      "key": "-",
+      "scope": "app"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "ownerName": "Safari",
+  "ownerType": "mac-app",
+  "sourceUrl": "https://support.apple.com/guide/safari/keyboard-and-other-shortcuts-cpsh003/mac",
+  "shortcuts": [
+    {
+      "id": "new-tab",
+      "commandName": "New Tab",
+      "modifiers": ["command"],
+      "key": "T",
+      "scope": "app"
+    },
+    {
+      "id": "new-window",
+      "commandName": "New Window",
+      "modifiers": ["command"],
+      "key": "N",
+      "scope": "app"
+    },
+    {
+      "id": "reopen-last-closed-tab",
+      "commandName": "Reopen Last Closed Tab",
+      "modifiers": ["command", "shift"],
+      "key": "T",
+      "scope": "app"
+    },
+    {
+      "id": "show-sidebar",
+      "commandName": "Show Sidebar",
+      "modifiers": ["command", "shift"],
+      "key": "L",
+      "scope": "app"
+    },
+    {
+      "id": "open-location",
+      "commandName": "Open Location",
+      "modifiers": ["command"],
+      "key": "L",
+      "scope": "app"
+    },
+    {
+      "id": "reload-page",
+      "commandName": "Reload Page",
+      "modifiers": ["command"],
+      "key": "R",
+      "scope": "app"
+    }
+  ]
+}

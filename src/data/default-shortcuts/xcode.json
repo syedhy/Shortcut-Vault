@@ -1,0 +1,63 @@
+{
+  "ownerName": "Xcode",
+  "ownerType": "mac-app",
+  "sourceUrl": "https://developer.apple.com/library/archive/documentation/IDEs/Conceptual/xcode_help-command_shortcuts/Introduction/Introduction.html",
+  "shortcuts": [
+    {
+      "id": "build",
+      "commandName": "Build",
+      "modifiers": ["command"],
+      "key": "B",
+      "scope": "app"
+    },
+    {
+      "id": "run",
+      "commandName": "Run",
+      "modifiers": ["command"],
+      "key": "R",
+      "scope": "app"
+    },
+    {
+      "id": "test",
+      "commandName": "Test",
+      "modifiers": ["command"],
+      "key": "U",
+      "scope": "app"
+    },
+    {
+      "id": "stop",
+      "commandName": "Stop",
+      "modifiers": ["command"],
+      "key": ".",
+      "scope": "app"
+    },
+    {
+      "id": "open-quickly",
+      "commandName": "Open Quickly",
+      "modifiers": ["command", "shift"],
+      "key": "O",
+      "scope": "app"
+    },
+    {
+      "id": "show-navigator",
+      "commandName": "Show Navigator",
+      "modifiers": ["command"],
+      "key": "0",
+      "scope": "app"
+    },
+    {
+      "id": "show-inspector",
+      "commandName": "Show Inspector",
+      "modifiers": ["command", "option"],
+      "key": "0",
+      "scope": "app"
+    },
+    {
+      "id": "show-debug-area",
+      "commandName": "Show Debug Area",
+      "modifiers": ["command", "shift"],
+      "key": "Y",
+      "scope": "app"
+    }
+  ]
+}

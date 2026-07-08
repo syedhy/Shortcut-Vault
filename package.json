@@ -1,0 +1,88 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "shortcut-vault",
+  "title": "Shortcut Vault",
+  "description": "Search, save, import, export, and manage keyboard shortcuts locally.",
+  "icon": "icon.png",
+  "author": "hyder",
+  "categories": [
+    "Productivity"
+  ],
+  "license": "MIT",
+  "platforms": [
+    "macOS"
+  ],
+  "commands": [
+    {
+      "name": "search-shortcuts",
+      "title": "Search Shortcuts",
+      "description": "Search default and custom shortcuts.",
+      "mode": "view",
+      "icon": "icon.png"
+    },
+    {
+      "name": "search-default-shortcuts",
+      "title": "Search Default Shortcuts",
+      "description": "Search bundled shortcut databases.",
+      "mode": "view",
+      "icon": "icon.png"
+    },
+    {
+      "name": "search-custom-shortcuts",
+      "title": "Search Custom Shortcuts",
+      "description": "Search shortcuts you created.",
+      "mode": "view",
+      "icon": "icon.png"
+    },
+    {
+      "name": "add-shortcut",
+      "title": "Add Shortcut",
+      "description": "Save a custom shortcut.",
+      "mode": "view",
+      "icon": "icon.png"
+    },
+    {
+      "name": "manage-custom-shortcuts",
+      "title": "Manage Custom Shortcuts",
+      "description": "Edit, duplicate, and delete custom shortcuts.",
+      "mode": "view",
+      "icon": "icon.png"
+    },
+    {
+      "name": "export-shortcuts",
+      "title": "Export Shortcuts",
+      "description": "Export custom shortcuts as JSON.",
+      "mode": "view",
+      "icon": "icon.png"
+    },
+    {
+      "name": "import-shortcuts",
+      "title": "Import Shortcuts",
+      "description": "Import custom shortcuts from JSON.",
+      "mode": "view",
+      "icon": "icon.png"
+    }
+  ],
+  "scripts": {
+    "validate-data": "node scripts/validate-default-shortcuts.mjs",
+    "generate-data": "npm run validate-data && node scripts/generate-default-shortcuts.mjs && prettier --write src/data/generated-default-shortcuts.ts",
+    "test": "npm run validate-data && npm run test:import-export",
+    "test:import-export": "rm -rf .tmp/test-build && tsc --project tsconfig.test.json && node .tmp/test-build/scripts/test-import-export-format.js",
+    "build": "npm run generate-data && ray build -e dist",
+    "dev": "npm run generate-data && ray develop",
+    "lint": "ray lint",
+    "fix-lint": "ray lint --fix",
+    "typecheck": "npm run generate-data && tsc --noEmit"
+  },
+  "dependencies": {
+    "@raycast/api": "^1.104.21",
+    "@raycast/utils": "^2.2.7"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^2.2.0",
+    "@types/node": "^24.0.10",
+    "eslint": "^9.30.1",
+    "prettier": "^3.6.2",
+    "typescript": "^5.8.3"
+  }
+}

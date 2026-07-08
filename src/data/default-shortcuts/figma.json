@@ -1,0 +1,63 @@
+{
+  "ownerName": "Figma",
+  "ownerType": "webapp",
+  "sourceUrl": "https://help.figma.com/hc/en-us/articles/360040328653-Use-Figma-products-with-a-keyboard",
+  "shortcuts": [
+    {
+      "id": "show-keyboard-shortcuts",
+      "commandName": "Show Keyboard Shortcuts",
+      "modifiers": ["control", "shift"],
+      "key": "?",
+      "scope": "webapp"
+    },
+    {
+      "id": "quick-actions",
+      "commandName": "Quick Actions",
+      "modifiers": ["command"],
+      "key": "/",
+      "scope": "webapp"
+    },
+    {
+      "id": "move-tool",
+      "commandName": "Move Tool",
+      "modifiers": [],
+      "key": "V",
+      "scope": "webapp"
+    },
+    {
+      "id": "frame-tool",
+      "commandName": "Frame Tool",
+      "modifiers": [],
+      "key": "F",
+      "scope": "webapp"
+    },
+    {
+      "id": "text-tool",
+      "commandName": "Text Tool",
+      "modifiers": [],
+      "key": "T",
+      "scope": "webapp"
+    },
+    {
+      "id": "rectangle-tool",
+      "commandName": "Rectangle Tool",
+      "modifiers": [],
+      "key": "R",
+      "scope": "webapp"
+    },
+    {
+      "id": "group-selection",
+      "commandName": "Group Selection",
+      "modifiers": ["command"],
+      "key": "G",
+      "scope": "webapp"
+    },
+    {
+      "id": "ungroup-selection",
+      "commandName": "Ungroup Selection",
+      "modifiers": ["command", "shift"],
+      "key": "G",
+      "scope": "webapp"
+    }
+  ]
+}

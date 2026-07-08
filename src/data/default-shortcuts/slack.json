@@ -1,0 +1,56 @@
+{
+  "ownerName": "Slack",
+  "ownerType": "mac-app",
+  "sourceUrl": "https://slack.com/help/articles/115003340723-Navigate-Slack-with-your-keyboard",
+  "shortcuts": [
+    {
+      "id": "quick-switcher",
+      "commandName": "Open Conversation",
+      "modifiers": ["command"],
+      "key": "K",
+      "scope": "app"
+    },
+    {
+      "id": "compose-new-message",
+      "commandName": "Compose New Message",
+      "modifiers": ["command"],
+      "key": "N",
+      "scope": "app"
+    },
+    {
+      "id": "show-shortcuts",
+      "commandName": "Show Keyboard Shortcuts",
+      "modifiers": ["command"],
+      "key": "/",
+      "scope": "app"
+    },
+    {
+      "id": "search-current-conversation",
+      "commandName": "Search Current Conversation",
+      "modifiers": ["command"],
+      "key": "F",
+      "scope": "app"
+    },
+    {
+      "id": "upload-file",
+      "commandName": "Upload File",
+      "modifiers": ["command"],
+      "key": "U",
+      "scope": "app"
+    },
+    {
+      "id": "next-unread",
+      "commandName": "Next Unread Conversation",
+      "modifiers": ["option", "shift"],
+      "key": "Down",
+      "scope": "app"
+    },
+    {
+      "id": "previous-unread",
+      "commandName": "Previous Unread Conversation",
+      "modifiers": ["option", "shift"],
+      "key": "Up",
+      "scope": "app"
+    }
+  ]
+}
