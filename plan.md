@@ -230,6 +230,19 @@ Scope:
 - [x] Preserve source/scope/owner dropdown filtering.
 - [x] Verify build, lint, typecheck, tests, and Raycast dev compile.
 
+### Phase 13: Advanced Search and Owner Canonicalization
+
+Status: Complete
+
+Scope:
+
+- [x] Add custom AND-based search across command, shortcut keys, owner, source, and scope.
+- [x] Support shortcut aliases such as `cmd`, `command`, `option`, `alt`, `ctrl`, symbols, and plus-separated keys.
+- [x] Support chained searches such as `Figma custom cmd p`.
+- [x] Add focused search tests.
+- [x] Add existing-owner selection in Add/Edit Shortcut.
+- [x] Canonicalize typed owner names against existing bundled and custom owners.
+
 ## Decisions Made
 
 - Use Raycast `LocalStorage` for custom shortcuts because it is local, supported by Raycast, and does not introduce sync or account dependencies.
@@ -257,6 +270,8 @@ Scope:
 - Treat blank owner input saving as `General` as an accepted product change from later user direction, superseding the original prompt's required owner field while preserving a concrete owner in stored data.
 - Confirm duplicate custom shortcuts instead of blocking them. Legitimate duplicate key combinations can exist across contexts, but accidental duplicates should be visible before saving.
 - Explicitly enable Raycast native `List` filtering whenever `onSearchTextChange` is used. Raycast otherwise treats filtering as extension-owned, which can make typing appear to do nothing.
+- Use custom shortcut search for the main shortcut lists because Raycast's native fuzzy search cannot guarantee multi-term AND queries like `Figma custom cmd p`.
+- Canonicalize owner names from the current default and custom shortcut dataset so typed owners like `figma` reuse `Figma` instead of creating duplicate owner spellings.
 
 ## Tradeoffs
 
@@ -270,6 +285,7 @@ Scope:
 - Blank owner input is normalized at save time instead of making `ownerName` optional in the data model. This avoids import/export compatibility churn.
 - The import/export tests use Node's built-in `assert` plus a small TypeScript compile step instead of adding a full test framework. This keeps dependencies minimal, but the harness is intentionally narrow.
 - Duplicate detection is scoped to custom shortcuts with the same normalized owner, scope, key, and modifiers. It does not block duplicates across different owners or scopes.
+- Custom search gives up Raycast's native ranking in exchange for deterministic chained filtering across every shortcut field.
 
 ## Deferred Ideas
 
@@ -985,3 +1001,66 @@ Next phase:
 
 - Continue development-hardening passes only where user testing exposes real issues.
 - Keep deployment, screenshots, and publishing for the user's final store-submission workflow.
+
+## Phase 13 Completion Notes
+
+Completed on 2026-07-08.
+
+Implemented:
+
+- Added `src/lib/shortcut-search.ts` for deterministic shortcut search.
+- Added `scripts/test-shortcut-search.ts` and wired it into `npm test`.
+- Search now treats space-separated terms as chained filters; every term must match at least one shortcut field.
+- Search supports command names, owner names, source type, scope, modifier names, modifier symbols, and key text.
+- Search supports inputs like `cmd p`, `cmd+shift+p`, `⌘⇧P`, `option 1`, `cmd slash`, `Figma custom command`, and `Safari app cmd t`.
+- Replaced Raycast-native list search with custom search in shared shortcut lists.
+- Added existing-owner dropdown in Add/Edit Shortcut.
+- Canonicalized typed owners against existing default/custom owners.
+- Preserved custom owner entry for owners that do not already exist.
+- Kept screenshots and publishing out of scope.
+
+Created files:
+
+- `scripts/test-shortcut-search.ts`
+- `src/lib/shortcut-search.ts`
+
+Modified files:
+
+- `README.md`
+- `package.json`
+- `plan.md`
+- `src/components/ShortcutForm.tsx`
+- `src/components/ShortcutList.tsx`
+- `src/lib/shortcut-data.ts`
+- `src/lib/storage.ts`
+- `src/types/shortcut.ts`
+
+Deleted files:
+
+- None.
+
+Verification:
+
+- `npm run test` passed.
+- `npm run typecheck` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run dev` started successfully, compiled all seven command entry points, and was stopped after verification.
+
+Expected behavior:
+
+- Typing `Figma custom cmd p` filters to Figma custom shortcuts whose shortcut or metadata matches Command + P.
+- Typing command names still works.
+- Typing modifier aliases such as `cmd`, `command`, `option`, `alt`, `ctrl`, or symbols such as `⌘` works.
+- Typing an existing owner name in Add/Edit Shortcut saves with canonical spelling and owner type.
+- Choosing an owner from Existing Owner fills the Owner App/Webapp field.
+
+Tradeoffs:
+
+- Search ranking is deterministic and simple rather than Raycast-fuzzy. This makes chained narrowing predictable.
+- Existing-owner selection is implemented with Raycast's native dropdown plus editable text field because Raycast forms do not expose a true editable combobox in this API version.
+
+Next phase:
+
+- Continue development hardening from real usage feedback.
+- Keep screenshots, deployment, and publishing for the user's final workflow.

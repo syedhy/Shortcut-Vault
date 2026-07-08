@@ -18,6 +18,7 @@ import {
   getFullShortcutText,
   getShortcutSubtitle,
 } from "../lib/shortcut-format";
+import { searchShortcuts } from "../lib/shortcut-search";
 import { SCOPE_LABELS, SOURCE_LABELS } from "../lib/labels";
 import type { ScopeType, Shortcut, ShortcutFilter, SourceType } from "../types/shortcut";
 import { ShortcutDetails } from "./ShortcutDetails";
@@ -67,26 +68,31 @@ export function ShortcutList({ filter, title, intent = "search" }: Props) {
     }
   }, [availableFilters, viewFilter]);
 
-  const displayedShortcuts = useMemo(
+  const filteredShortcuts = useMemo(
     () => applyViewFilter(shortcuts, viewFilter),
     [shortcuts, viewFilter],
+  );
+
+  const displayedShortcuts = useMemo(
+    () => searchShortcuts(filteredShortcuts, searchText),
+    [filteredShortcuts, searchText],
   );
 
   const activeFilterLabel = getViewFilterLabel(viewFilter);
   const hasActiveViewFilter = viewFilter !== "all";
 
   const emptyState = useMemo(() => {
-    if (hasActiveViewFilter && displayedShortcuts.length === 0) {
-      return {
-        title: `No shortcuts for ${activeFilterLabel}`,
-        description: "Show all results or choose a different filter.",
-      };
-    }
-
     if (searchText.trim()) {
       return {
         title: "No shortcuts found",
-        description: "Try searching by command, keys, owner, scope, or source.",
+        description: "Try command names, owner names, scopes, sources, or shortcuts like cmd p.",
+      };
+    }
+
+    if (hasActiveViewFilter && filteredShortcuts.length === 0) {
+      return {
+        title: `No shortcuts for ${activeFilterLabel}`,
+        description: "Show all results or choose a different filter.",
       };
     }
 
@@ -110,7 +116,7 @@ export function ShortcutList({ filter, title, intent = "search" }: Props) {
     };
   }, [
     activeFilterLabel,
-    displayedShortcuts.length,
+    filteredShortcuts.length,
     filter,
     hasActiveViewFilter,
     intent,
@@ -142,8 +148,9 @@ export function ShortcutList({ filter, title, intent = "search" }: Props) {
     <List
       navigationTitle={title}
       searchBarPlaceholder="Search command, keys, owner, scope, or source..."
+      searchText={searchText}
       isLoading={isLoading}
-      filtering
+      filtering={false}
       onSearchTextChange={setSearchText}
       searchBarAccessory={
         shortcuts.length > 0 ? (

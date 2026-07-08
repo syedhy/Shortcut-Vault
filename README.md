@@ -31,6 +31,8 @@ Press Enter on any result to copy the shortcut keys immediately.
 
 Use the filter dropdown to narrow results by source, scope, or owner without leaving the search list.
 
+Search supports chained terms. For example, `Figma custom cmd p` finds custom Figma shortcuts using Command + P, and `Safari app new tab` narrows by owner, scope, and command text.
+
 ### Search Default Shortcuts
 
 Searches only the bundled shortcut database.
@@ -66,6 +68,8 @@ Creates a custom shortcut with:
 - Optional owner app/webapp, saved as General when left blank
 - Scope
 - Optional notes
+
+Use Existing Owner to choose an owner already present in bundled or custom shortcuts. Typed owner names are canonicalized when they match an existing owner, so `figma` saves as `Figma` instead of creating a second owner spelling.
 
 If the same shortcut already exists for the same owner and scope, Shortcut Vault asks before saving the duplicate.
 
@@ -315,3 +319,12 @@ The screenshot files are placeholders and should be replaced with user-provided 
 - Audited the extension against the original product prompt.
 - Added duplicate custom shortcut confirmation.
 - Removed an unused dependency.
+
+### Phase 12
+
+- Fixed shortcut list search by restoring native Raycast filtering.
+
+### Phase 13
+
+- Added robust chained shortcut search.
+- Added existing-owner selection and owner canonicalization in Add/Edit Shortcut.

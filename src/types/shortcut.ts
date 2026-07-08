@@ -51,6 +51,7 @@ export type ShortcutFormValues = {
   modifiers: ShortcutModifier[];
   key: string;
   ownerName: string;
+  ownerType?: OwnerType;
   scope: ScopeType;
   notes: string;
 };
