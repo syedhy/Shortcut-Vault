@@ -69,7 +69,7 @@ Creates a custom shortcut with:
 - Scope
 - Optional notes
 
-Use Existing Owner to choose an owner already present in bundled or custom shortcuts. Typed owner names are canonicalized when they match an existing owner, so `figma` saves as `Figma` instead of creating a second owner spelling.
+Typed owner names are canonicalized when they match an existing owner, so `figma` saves as `Figma` instead of creating a second owner spelling. If the owner does not exist yet, Shortcut Vault saves it as a new owner.
 
 If the same shortcut already exists for the same owner and scope, Shortcut Vault asks before saving the duplicate.
 
@@ -334,3 +334,8 @@ The screenshot files are placeholders and should be replaced with user-provided 
 
 - Hardened import duplicate ID preparation.
 - Added tests for existing conflicts, in-file duplicate IDs, and generated-ID retries.
+
+### Phase 15
+
+- Simplified Add/Edit Shortcut owner entry back to one field.
+- Kept existing-owner canonicalization without a separate owner selector.

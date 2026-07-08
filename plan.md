@@ -256,6 +256,18 @@ Scope:
 - [x] Test generated ID collision retries.
 - [x] Keep `main` synchronized with completed work before starting the phase, then continue on `work`.
 
+### Phase 15: Owner Field Simplification
+
+Status: Complete
+
+Scope:
+
+- [x] Remove the separate Existing Owner control from Add/Edit Shortcut.
+- [x] Keep a single Owner App/Webapp field.
+- [x] Preserve canonicalization when typed owner text matches an existing owner.
+- [x] Preserve custom owner creation for new typed owner names.
+- [x] Add live owner match feedback in the form.
+
 ## Decisions Made
 
 - Use Raycast `LocalStorage` for custom shortcuts because it is local, supported by Raycast, and does not introduce sync or account dependencies.
@@ -286,6 +298,7 @@ Scope:
 - Use custom shortcut search for the main shortcut lists because Raycast's native fuzzy search cannot guarantee multi-term AND queries like `Figma custom cmd p`.
 - Canonicalize owner names from the current default and custom shortcut dataset so typed owners like `figma` reuse `Figma` instead of creating duplicate owner spellings.
 - Keep import conflict preparation pure and tested separately from Raycast `LocalStorage`; the command layer only reads, prepares, and saves.
+- Keep Add/Edit Shortcut owner entry as one field. Raycast's current form API provides TextField and Dropdown, but not a native editable combobox that supports arbitrary text plus dropdown suggestions in the same control.
 
 ## Tradeoffs
 
@@ -1126,6 +1139,56 @@ Expected behavior:
 Tradeoffs:
 
 - This phase tests the import preparation logic rather than mocking Raycast `LocalStorage`. That keeps tests stable and dependency-light while covering the risky conflict behavior.
+
+Next phase:
+
+- Continue development hardening from real usage feedback.
+- Keep screenshots, deployment, and publishing for the user's final workflow.
+
+## Phase 15 Completion Notes
+
+Completed on 2026-07-08.
+
+Implemented:
+
+- Removed the separate `Existing Owner` dropdown from Add/Edit Shortcut.
+- Kept one `Owner App/Webapp` field for both existing and new owners.
+- Preserved canonicalization: typing an existing owner with different casing still saves the existing canonical owner name and owner type.
+- Added live `Owner Match` feedback to show whether the typed owner saves as `General`, reuses an existing owner, or creates a new owner.
+- Updated README owner-entry language.
+
+Created files:
+
+- None.
+
+Modified files:
+
+- `README.md`
+- `plan.md`
+- `src/components/ShortcutForm.tsx`
+
+Deleted files:
+
+- None.
+
+Verification:
+
+- `npm run test` passed.
+- `npm run typecheck` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run dev` started successfully, compiled all seven command entry points, and was stopped after verification.
+
+Expected behavior:
+
+- Add/Edit Shortcut shows one owner entry field, not two owner controls.
+- Blank owner saves as `General`.
+- Typing `figma` saves as existing canonical `Figma` when that owner exists.
+- Typing a new owner name saves it as a new owner.
+
+Tradeoffs:
+
+- Raycast's current form API does not expose a true editable combobox, so the extension uses a single text field with canonicalization and live match feedback instead of a combined text/dropdown control.
 
 Next phase:
 

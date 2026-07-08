@@ -44,9 +44,6 @@ const emptyValues: ShortcutFormValues = {
   notes: "",
 };
 
-const GENERAL_OWNER_VALUE = "__general";
-const CUSTOM_OWNER_VALUE = "__custom";
-
 export function ShortcutForm({ shortcut, onSaved }: Props) {
   const { pop } = useNavigation();
   const [values, setValues] = useState<ShortcutFormValues>(() =>
@@ -68,7 +65,8 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
   const isEditing = Boolean(shortcut);
   const submittedValues = getCanonicalOwnerValues(values, ownerOptions);
   const ownerPreview = submittedValues.ownerName.trim() || GENERAL_OWNER_NAME;
-  const selectedKnownOwnerValue = getSelectedKnownOwnerValue(values.ownerName, ownerOptions);
+  const ownerMatch = getMatchingOwnerOption(values.ownerName, ownerOptions);
+  const ownerStatus = getOwnerStatus(values.ownerName, ownerMatch);
 
   useEffect(() => {
     void getShortcutOwnerOptions()
@@ -193,62 +191,11 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
       />
       <Form.Description title="Preview" text={preview} />
       <Form.Separator />
-      <Form.Dropdown
-        id="knownOwner"
-        title="Existing Owner"
-        info="Choose an existing owner to keep app names consistent, or type a custom owner below."
-        value={selectedKnownOwnerValue}
-        onChange={(ownerValue) => {
-          if (ownerValue === GENERAL_OWNER_VALUE) {
-            setValues((current) => ({ ...current, ownerName: "", ownerType: "other" }));
-            return;
-          }
-
-          if (ownerValue === CUSTOM_OWNER_VALUE) {
-            return;
-          }
-
-          const option = ownerOptions.find((owner) => owner.ownerName === ownerValue);
-          if (option) {
-            setValues((current) => ({
-              ...current,
-              ownerName: option.ownerName,
-              ownerType: option.ownerType,
-            }));
-          }
-        }}
-      >
-        <Form.Dropdown.Item
-          value={GENERAL_OWNER_VALUE}
-          title={GENERAL_OWNER_NAME}
-          icon={{ source: Icon.Circle, tintColor: Color.SecondaryText }}
-          keywords={["system", "general", "global"]}
-        />
-        {ownerOptions.length > 0 ? (
-          <Form.Dropdown.Section title="Known Owners">
-            {ownerOptions.map((owner) => (
-              <Form.Dropdown.Item
-                key={owner.ownerName}
-                value={owner.ownerName}
-                title={owner.ownerName}
-                icon={{ source: Icon.AppWindow, tintColor: getOwnerColor(owner.ownerType) }}
-                keywords={[owner.ownerType]}
-              />
-            ))}
-          </Form.Dropdown.Section>
-        ) : null}
-        <Form.Dropdown.Item
-          value={CUSTOM_OWNER_VALUE}
-          title="Custom Owner"
-          icon={{ source: Icon.Pencil, tintColor: Color.PrimaryText }}
-          keywords={["new", "custom"]}
-        />
-      </Form.Dropdown>
       <Form.TextField
         id="ownerName"
         title="Owner App/Webapp"
         placeholder="General, Safari, Gmail, Raycast"
-        info="Type a custom owner, or type an existing owner name to save it with the canonical spelling."
+        info="Type an owner. Existing owner names are reused automatically; blank saves as General."
         value={values.ownerName}
         error={errors.ownerName}
         onChange={(ownerName) =>
@@ -258,6 +205,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
           }))
         }
       />
+      <Form.Description title="Owner Match" text={ownerStatus} />
       <Form.Dropdown
         id="scope"
         title="Scope"
@@ -323,21 +271,33 @@ function getCanonicalOwnerValues(
   return { ...values, ownerName, ownerType: inferFormOwnerType(values.scope) };
 }
 
-function getSelectedKnownOwnerValue(
+function getMatchingOwnerOption(
   ownerName: string,
   ownerOptions: ShortcutOwnerOption[],
-): string {
+): ShortcutOwnerOption | undefined {
   const trimmedOwnerName = ownerName.trim();
 
   if (!trimmedOwnerName) {
-    return GENERAL_OWNER_VALUE;
+    return undefined;
   }
 
-  const option = ownerOptions.find(
+  return ownerOptions.find(
     (owner) => owner.ownerName.toLocaleLowerCase() === trimmedOwnerName.toLocaleLowerCase(),
   );
+}
 
-  return option?.ownerName ?? CUSTOM_OWNER_VALUE;
+function getOwnerStatus(ownerName: string, ownerMatch: ShortcutOwnerOption | undefined): string {
+  const trimmedOwnerName = ownerName.trim();
+
+  if (!trimmedOwnerName) {
+    return "Saves as General.";
+  }
+
+  if (ownerMatch) {
+    return `Uses existing owner: ${ownerMatch.ownerName}.`;
+  }
+
+  return `Creates owner: ${trimmedOwnerName}.`;
 }
 
 function inferFormOwnerType(scope: ShortcutFormValues["scope"]): OwnerType {
@@ -348,19 +308,6 @@ function inferFormOwnerType(scope: ShortcutFormValues["scope"]): OwnerType {
       return "webapp";
     case "global":
       return "other";
-  }
-}
-
-function getOwnerColor(ownerType: OwnerType): Color.ColorLike {
-  switch (ownerType) {
-    case "mac-app":
-      return Color.Magenta;
-    case "webapp":
-      return Color.Green;
-    case "system":
-      return Color.Yellow;
-    case "other":
-      return Color.SecondaryText;
   }
 }
 
