@@ -90,8 +90,35 @@ export async function updateCustomShortcut(
   return updated;
 }
 
-function normalizeOwnerName(ownerName: string): string {
+export async function findDuplicateCustomShortcut(
+  values: ShortcutFormValues,
+  excludedId?: string,
+): Promise<Shortcut | undefined> {
+  const shortcuts = await getCustomShortcuts();
+  const ownerName = normalizeOwnerName(values.ownerName).toLocaleLowerCase();
+  const key = normalizeKey(values.key);
+  const modifiers = normalizeModifiers(values.modifiers);
+
+  return shortcuts.find((shortcut) => {
+    if (shortcut.id === excludedId) {
+      return false;
+    }
+
+    return (
+      shortcut.ownerName.toLocaleLowerCase() === ownerName &&
+      shortcut.scope === values.scope &&
+      shortcut.key === key &&
+      areModifiersEqual(shortcut.modifiers, modifiers)
+    );
+  });
+}
+
+export function normalizeOwnerName(ownerName: string): string {
   return ownerName.trim() || GENERAL_OWNER_NAME;
+}
+
+function areModifiersEqual(left: Shortcut["modifiers"], right: Shortcut["modifiers"]): boolean {
+  return left.length === right.length && left.every((modifier, index) => modifier === right[index]);
 }
 
 export async function deleteCustomShortcut(id: string): Promise<void> {

@@ -207,6 +207,18 @@ Scope:
 - [x] Verify fallback shortcut display generation when `shortcutDisplay` is missing.
 - [x] Keep the test harness local and dependency-light.
 
+### Phase 11: Original Prompt Compliance Audit
+
+Status: Complete
+
+Scope:
+
+- [x] Re-read the original product prompt and compare it against the current implementation.
+- [x] Add duplicate custom shortcut confirmation for matching owner, scope, key, and modifiers.
+- [x] Remove unused runtime dependencies.
+- [x] Document accepted deviations introduced by later user requests.
+- [x] Re-run validation, typecheck, lint, build, and Raycast dev compile.
+
 ## Decisions Made
 
 - Use Raycast `LocalStorage` for custom shortcuts because it is local, supported by Raycast, and does not introduce sync or account dependencies.
@@ -231,6 +243,8 @@ Scope:
 - Use `General` as the concrete owner name for custom shortcuts saved without an owner. This keeps the owner field useful for search, filters, export, and list accessories while making general/system shortcuts faster to save.
 - Keep import/export format validation in a pure module so edge cases can be tested without invoking Raycast UI, filesystem export paths, or local storage.
 - Display shortcut modifiers in Command-first order to match the product examples and the way users commonly search for shortcuts.
+- Treat blank owner input saving as `General` as an accepted product change from later user direction, superseding the original prompt's required owner field while preserving a concrete owner in stored data.
+- Confirm duplicate custom shortcuts instead of blocking them. Legitimate duplicate key combinations can exist across contexts, but accidental duplicates should be visible before saving.
 
 ## Tradeoffs
 
@@ -243,6 +257,7 @@ Scope:
 - List filtering runs over already-loaded shortcut arrays. This avoids a heavier query layer and should remain fast for the expected Raycast shortcut-library scale.
 - Blank owner input is normalized at save time instead of making `ownerName` optional in the data model. This avoids import/export compatibility churn.
 - The import/export tests use Node's built-in `assert` plus a small TypeScript compile step instead of adding a full test framework. This keeps dependencies minimal, but the harness is intentionally narrow.
+- Duplicate detection is scoped to custom shortcuts with the same normalized owner, scope, key, and modifiers. It does not block duplicates across different owners or scopes.
 
 ## Deferred Ideas
 
@@ -267,6 +282,7 @@ Scope:
 - Review package metadata once the final Raycast Store author is known.
 - Continue deepening shortcut databases when additional high-confidence shortcut sources are available.
 - Consider a full test runner only if future behavior needs broader component or storage tests.
+- Add broader storage-level tests only if the project adopts a Raycast API mocking approach.
 
 ## Phase 1 Completion Notes
 
@@ -847,3 +863,63 @@ Next phase:
 
 - Add storage-level or import workflow integration coverage if the project is moved into a Git-backed repo and a broader test harness is desired.
 - Keep real screenshots for the final store-readiness pass when user-provided screenshots are available.
+
+## Phase 11 Completion Notes
+
+Completed on 2026-07-08.
+
+Implemented:
+
+- Re-read the original Shortcut Vault product prompt and audited the current implementation against it.
+- Added duplicate custom shortcut detection before Add/Edit saves.
+- Added a confirmation dialog when a custom shortcut already exists with the same normalized owner, scope, key, and modifiers.
+- Removed unused `@raycast/utils` dependency to keep the extension dependency-light.
+- Documented that blank owner input saving as `General` is an accepted later product change, not an accidental miss from the original prompt.
+- Kept screenshots deferred for the final pass, as requested.
+
+Created files:
+
+- None.
+
+Modified files:
+
+- `README.md`
+- `package-lock.json`
+- `package.json`
+- `plan.md`
+- `src/components/ShortcutForm.tsx`
+- `src/lib/storage.ts`
+
+Deleted files:
+
+- None.
+
+Verification:
+
+- `npm run test` passed.
+- `npm run typecheck` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run dev` started successfully, compiled all seven command entry points, and was stopped after verification.
+
+Expected behavior:
+
+- Add Shortcut and Edit Shortcut save normally when no matching custom shortcut exists.
+- If a matching custom shortcut already exists for the same owner, scope, key, and modifiers, Shortcut Vault asks whether to save anyway.
+- Users can still intentionally save duplicates after confirmation.
+- The extension no longer ships the unused `@raycast/utils` package.
+
+Tradeoffs:
+
+- Duplicate checks are advisory instead of hard blocking. This preserves flexibility for legitimate duplicate shortcut setups.
+- Duplicate checks compare custom shortcuts only, because bundled default shortcuts should not prevent users from recording personal overrides.
+
+Original prompt audit result:
+
+- The original prompt is materially covered by the current implementation.
+- One original requirement was intentionally superseded by later user direction: Owner App/Webapp is no longer strictly required in the form; blank values save as `General`.
+
+Next phase:
+
+- Store-readiness final pass with user-provided screenshots when available.
+- Optional broader storage/import integration tests if a Raycast API mocking approach is added.

@@ -1,16 +1,23 @@
 import {
   Action,
   ActionPanel,
+  Alert,
   Color,
   Form,
   Icon,
   Toast,
+  confirmAlert,
   showToast,
   useNavigation,
 } from "@raycast/api";
 import { useState } from "react";
 import { MODIFIER_LABELS, SCOPE_LABELS } from "../lib/labels";
-import { GENERAL_OWNER_NAME, createCustomShortcut, updateCustomShortcut } from "../lib/storage";
+import {
+  GENERAL_OWNER_NAME,
+  createCustomShortcut,
+  findDuplicateCustomShortcut,
+  updateCustomShortcut,
+} from "../lib/storage";
 import { formatShortcutDisplay } from "../lib/shortcut-format";
 import { hasFormErrors, validateShortcutForm, type FormErrors } from "../lib/validation";
 import {
@@ -67,6 +74,22 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
     }
 
     try {
+      const duplicate = await findDuplicateCustomShortcut(values, shortcut?.id);
+      if (duplicate) {
+        const confirmed = await confirmAlert({
+          title: "Save duplicate shortcut?",
+          message: `${preview} already exists for ${ownerPreview} as ${duplicate.commandName}.`,
+          primaryAction: {
+            title: "Save Anyway",
+            style: Alert.ActionStyle.Default,
+          },
+        });
+
+        if (!confirmed) {
+          return;
+        }
+      }
+
       if (shortcut) {
         await updateCustomShortcut(shortcut.id, values);
         await showToast({ style: Toast.Style.Success, title: "Shortcut updated" });

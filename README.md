@@ -14,6 +14,7 @@ Shortcut Vault does not use accounts, authentication, subscriptions, sync, cloud
 - Search only user-created custom shortcuts.
 - Add custom shortcuts with modifier selectors and a live preview.
 - Manage custom shortcuts with edit, duplicate, and delete actions.
+- Confirm before saving duplicate custom shortcuts for the same owner, scope, and key.
 - Copy shortcut keys with Enter from search results.
 - Copy command names or full shortcut summaries.
 - View shortcut details and source URLs when available.
@@ -66,6 +67,8 @@ Creates a custom shortcut with:
 - Scope
 - Optional notes
 
+If the same shortcut already exists for the same owner and scope, Shortcut Vault asks before saving the duplicate.
+
 ### Manage Custom Shortcuts
 
 Lists custom shortcuts and supports:
@@ -115,6 +118,8 @@ npm run build
 `npm test` validates bundled shortcut databases and runs focused import/export format checks.
 
 This project intentionally does not include GitHub Actions, CI/CD workflows, release automation, deployment pipelines, or publish scripts.
+
+The extension keeps dependencies minimal and avoids unused runtime packages.
 
 ## Data Architecture
 
@@ -304,3 +309,9 @@ The screenshot files are placeholders and should be replaced with user-provided 
 - Added focused import/export format tests.
 - Extracted import/export validation into a pure module.
 - Hardened import validation for timestamp fields and fallback shortcut displays.
+
+### Phase 11
+
+- Audited the extension against the original product prompt.
+- Added duplicate custom shortcut confirmation.
+- Removed an unused dependency.
