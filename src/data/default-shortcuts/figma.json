@@ -25,10 +25,73 @@
       "scope": "webapp"
     },
     {
+      "id": "scale-tool",
+      "commandName": "Scale Tool",
+      "modifiers": [],
+      "key": "K",
+      "scope": "webapp"
+    },
+    {
       "id": "frame-tool",
       "commandName": "Frame Tool",
       "modifiers": [],
       "key": "F",
+      "scope": "webapp"
+    },
+    {
+      "id": "section-tool",
+      "commandName": "Section Tool",
+      "modifiers": ["shift"],
+      "key": "S",
+      "scope": "webapp"
+    },
+    {
+      "id": "slice-tool",
+      "commandName": "Slice Tool",
+      "modifiers": [],
+      "key": "S",
+      "scope": "webapp"
+    },
+    {
+      "id": "rectangle-tool",
+      "commandName": "Rectangle Tool",
+      "modifiers": [],
+      "key": "R",
+      "scope": "webapp"
+    },
+    {
+      "id": "line-tool",
+      "commandName": "Line Tool",
+      "modifiers": [],
+      "key": "L",
+      "scope": "webapp"
+    },
+    {
+      "id": "arrow-tool",
+      "commandName": "Arrow Tool",
+      "modifiers": ["shift"],
+      "key": "L",
+      "scope": "webapp"
+    },
+    {
+      "id": "ellipse-tool",
+      "commandName": "Ellipse Tool",
+      "modifiers": [],
+      "key": "O",
+      "scope": "webapp"
+    },
+    {
+      "id": "pen-tool",
+      "commandName": "Pen Tool",
+      "modifiers": [],
+      "key": "P",
+      "scope": "webapp"
+    },
+    {
+      "id": "pencil-tool",
+      "commandName": "Pencil Tool",
+      "modifiers": ["shift"],
+      "key": "P",
       "scope": "webapp"
     },
     {
@@ -39,10 +102,31 @@
       "scope": "webapp"
     },
     {
-      "id": "rectangle-tool",
-      "commandName": "Rectangle Tool",
+      "id": "resources",
+      "commandName": "Open Resources",
+      "modifiers": ["shift"],
+      "key": "I",
+      "scope": "webapp"
+    },
+    {
+      "id": "hand-tool",
+      "commandName": "Hand Tool",
       "modifiers": [],
-      "key": "R",
+      "key": "H",
+      "scope": "webapp"
+    },
+    {
+      "id": "comment-tool",
+      "commandName": "Comment Tool",
+      "modifiers": [],
+      "key": "C",
+      "scope": "webapp"
+    },
+    {
+      "id": "place-image-video",
+      "commandName": "Place Image or Video",
+      "modifiers": ["command", "shift"],
+      "key": "K",
       "scope": "webapp"
     },
     {
@@ -57,6 +141,90 @@
       "commandName": "Ungroup Selection",
       "modifiers": ["command", "shift"],
       "key": "G",
+      "scope": "webapp"
+    },
+    {
+      "id": "copy",
+      "commandName": "Copy",
+      "modifiers": ["command"],
+      "key": "C",
+      "scope": "webapp"
+    },
+    {
+      "id": "paste",
+      "commandName": "Paste",
+      "modifiers": ["command"],
+      "key": "V",
+      "scope": "webapp"
+    },
+    {
+      "id": "paste-over-selection",
+      "commandName": "Paste Over Selection",
+      "modifiers": ["command", "shift"],
+      "key": "V",
+      "scope": "webapp"
+    },
+    {
+      "id": "paste-to-replace",
+      "commandName": "Paste to Replace",
+      "modifiers": ["command", "shift"],
+      "key": "R",
+      "scope": "webapp"
+    },
+    {
+      "id": "copy-as-png",
+      "commandName": "Copy as PNG",
+      "modifiers": ["command", "shift"],
+      "key": "C",
+      "scope": "webapp"
+    },
+    {
+      "id": "minimize-ui",
+      "commandName": "Minimize or Expand UI",
+      "modifiers": ["command", "shift"],
+      "key": "\\",
+      "scope": "webapp"
+    },
+    {
+      "id": "show-outlines",
+      "commandName": "Show Outlines",
+      "modifiers": ["command", "shift"],
+      "key": "O",
+      "scope": "webapp"
+    },
+    {
+      "id": "pixel-grid",
+      "commandName": "Toggle Pixel Grid",
+      "modifiers": ["command"],
+      "key": "'",
+      "scope": "webapp"
+    },
+    {
+      "id": "snap-to-pixel-grid",
+      "commandName": "Toggle Snap to Pixel Grid",
+      "modifiers": ["command", "shift"],
+      "key": "'",
+      "scope": "webapp"
+    },
+    {
+      "id": "layout-guides",
+      "commandName": "Toggle Layout Guides",
+      "modifiers": ["control"],
+      "key": "G",
+      "scope": "webapp"
+    },
+    {
+      "id": "multiplayer-cursors",
+      "commandName": "Toggle Multiplayer Cursors",
+      "modifiers": ["command", "option"],
+      "key": "\\",
+      "scope": "webapp"
+    },
+    {
+      "id": "detach-instance",
+      "commandName": "Detach Instance",
+      "modifiers": ["command", "option"],
+      "key": "B",
       "scope": "webapp"
     }
   ]

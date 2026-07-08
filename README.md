@@ -152,7 +152,7 @@ npm run generate-data
 
 The generator runs database validation first, so invalid shortcut files fail fast before they reach the extension bundle.
 
-The bundled database currently contains 215 default shortcuts across 18 owners.
+The bundled database currently contains 530 default shortcuts across 18 owners.
 
 ## Adding New Shortcut Databases
 
@@ -381,3 +381,16 @@ Before submission:
 - Added official Apple/macOS shortcut datasets for macOS, Mail, Calendar, Notes, Reminders, App Store, and Freeform.
 - Made owner/app name tags use one consistent muted color.
 - Capped broad search rendering for snappier scrolling while preserving full-library search.
+
+### Phase 20
+
+- Pruned test-only files and placeholder/source-only assets from the production tree.
+- Kept data generation and validation scripts as production database safeguards.
+- Added a single `npm run verify` command for local release-readiness checks.
+
+### Phase 21
+
+- Fixed TypeScript module resolution deprecation by using modern `ESNext` modules with bundler resolution.
+- Expanded official-source coverage for Chrome, Finder, Safari, Terminal, Xcode, VS Code, Gmail, Slack, Notion, Figma, and Raycast.
+- Expanded the bundled default library to 530 shortcuts across 18 owners.
+- Improved symbol search for shortcuts using keys like `?`, `#`, brackets, quotes, and grave accent.

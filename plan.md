@@ -338,6 +338,19 @@ Scope:
 - [x] Update package scripts for production verification.
 - [x] Update README and plan for the pruned production surface.
 
+### Phase 21: Default Library Depth and TypeScript Resolution
+
+Status: Complete
+
+Scope:
+
+- [x] Fix TypeScript module resolution deprecation without relying on deprecated `node10` behavior.
+- [x] Expand official-source shortcut coverage for existing low-count databases.
+- [x] Regenerate the bundled default shortcut dataset.
+- [x] Improve symbol-key search normalization.
+- [x] Update README, changelog, and plan with current database size.
+- [x] Verify data validation, typecheck, lint, and Raycast build.
+
 ## Decisions Made
 
 - Use Raycast `LocalStorage` for custom shortcuts because it is local, supported by Raycast, and does not introduce sync or account dependencies.
@@ -373,6 +386,8 @@ Scope:
 - Keep existing owner matches as non-interactive `Form.Description` text. Raycast's form description API does not support colored inline text, and using token/dropdown-like components for preview state creates misleading affordances.
 - Use one muted owner tag color for all owner/app names so search result metadata is visually consistent. Source and scope tags still carry their own stable colors.
 - Cap rendered search results for broad queries while still searching the full loaded library. This keeps initial search screens snappy after database expansion.
+- Use `module: "ESNext"` with `moduleResolution: "bundler"` for TypeScript. `moduleResolution: "bundler"` is the right modern resolution mode for this Raycast/TypeScript setup, but it must be paired with an ES module output target rather than `commonjs`.
+- Keep official-source expansion focused on owners already in the app instead of adding new app families during this pass. This improves depth without changing UI, storage, or search architecture.
 
 ## Tradeoffs
 
@@ -390,10 +405,12 @@ Scope:
 - Empty exports are not offered as an action. This avoids producing technically valid but user-unhelpful empty files.
 - Empty imports are rejected. Shortcut Vault's official format is for transferable custom shortcuts, and an empty file usually indicates the wrong export was selected.
 - Broad search lists show a limited number of rows. Users can still reach any bundled shortcut by typing a narrower query, owner, scope, source, or key combination.
+- Gmail, Slack, Figma, and Notion include some single-key shortcuts because those products officially define single-key shortcut modes. This can look unusual next to macOS app shortcuts, but removing them would make those webapp datasets less accurate.
+- Some products publish shortcut panels or broad shortcut docs rather than stable machine-readable shortcut tables. The bundled data remains curated from official documentation and common documented shortcut panels instead of trying to scrape or exhaustively mirror every app.
 
 ## Deferred Ideas
 
-- Additional shortcut databases: Arc, Apple Mail, Calendar, iTerm, Linear, and other high-confidence sources.
+- Additional shortcut databases: Arc, iTerm, Linear, Apple Music, Preview, Photos, and other high-confidence sources.
 - Bulk edit custom shortcuts.
 - Optional duplicate detection views.
 - Contribution guide for shortcut database JSON files.
@@ -1570,3 +1587,82 @@ Tradeoffs:
 Next:
 
 - User-owned final steps are screenshot capture, metadata review, and Raycast Store submission.
+
+## Phase 21 Completion Notes
+
+Completed on 2026-07-09.
+
+Implemented:
+
+- Fixed the TypeScript module-resolution deprecation by switching from `commonjs` + deprecated `node` resolution to `ESNext` + `bundler`.
+- Expanded the bundled default shortcut database from 215 shortcuts to 530 shortcuts across the same 18 owners.
+- Expanded existing low-count datasets for Chrome, Finder, Safari, Terminal, Xcode, VS Code, Gmail, Slack, Notion, Figma, and Raycast.
+- Kept the expansion within the existing JSON-first architecture so search, UI, and storage did not need app-specific registration changes.
+- Improved search normalization for symbol-heavy shortcuts such as `?`, `!`, `#`, `@`, brackets, quotes, grave accent, and tilde.
+- Regenerated `src/data/generated-default-shortcuts.ts`.
+- Updated README and changelog with the new shortcut count and TypeScript resolution decision.
+
+Created files:
+
+- None.
+
+Modified files:
+
+- `CHANGELOG.md`
+- `README.md`
+- `plan.md`
+- `src/data/default-shortcuts/chrome.json`
+- `src/data/default-shortcuts/figma.json`
+- `src/data/default-shortcuts/finder.json`
+- `src/data/default-shortcuts/gmail.json`
+- `src/data/default-shortcuts/notion.json`
+- `src/data/default-shortcuts/raycast.json`
+- `src/data/default-shortcuts/safari.json`
+- `src/data/default-shortcuts/slack.json`
+- `src/data/default-shortcuts/terminal.json`
+- `src/data/default-shortcuts/vscode.json`
+- `src/data/default-shortcuts/xcode.json`
+- `src/data/generated-default-shortcuts.ts`
+- `src/lib/shortcut-search.ts`
+- `tsconfig.json`
+
+Deleted files:
+
+- None.
+
+Verification:
+
+- `npm run generate-data` passed and validated 530 default shortcuts across 18 datasets.
+- `npm run typecheck` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run verify` passed.
+
+Expected behavior:
+
+- TypeScript no longer reports the deprecated `moduleResolution=node10` path.
+- Search Default Shortcuts includes 530 bundled shortcuts across 18 owners.
+- Broad shortcut lists remain capped for responsiveness, while typed searches still filter the full loaded library.
+- Symbol-key searches are easier to discover with terms such as `question`, `hash`, `bracket`, `quote`, and `grave`.
+- Gmail and other webapp datasets include official single-key shortcuts where the product itself defines them.
+
+Sources used:
+
+- Apple Support: Mac keyboard shortcuts and app-specific shortcut guides.
+- Apple Developer: Xcode keyboard shortcuts archive.
+- Google Help: Chrome and Gmail keyboard shortcut guides.
+- Microsoft: VS Code keyboard shortcuts for macOS.
+- Slack Help: Slack keyboard shortcuts.
+- Notion Help Center: Notion keyboard shortcuts.
+- Figma Help Center: Figma keyboard shortcut panel and documented shortcut articles.
+- Raycast Manual: Keyboard shortcuts.
+
+Tradeoffs:
+
+- The database is much deeper but still curated; it does not attempt to mirror every shortcut from every app.
+- Some official webapp shortcuts are single letters or punctuation. They are kept because accuracy matters more than making every shortcut look like a macOS modifier chord.
+- The TypeScript fix uses modern ES module output because `bundler` resolution cannot be paired with `commonjs`.
+
+Next:
+
+- User-owned final steps are still screenshot capture, final metadata review, and Raycast Store submission.

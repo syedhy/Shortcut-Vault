@@ -8,7 +8,9 @@
 - Added versioned JSON import and export.
 - Added data-driven bundled shortcut databases.
 - Added validation, focused tests, store-readiness documentation, and final pre-submission hardening.
-- Expanded the bundled default shortcut library to 215 shortcuts across 18 owners.
+- Expanded the bundled default shortcut library to 530 shortcuts across 18 owners.
 - Made owner/app name tags visually consistent across search results.
 - Capped broad search result rendering to keep large shortcut lists responsive.
 - Pruned test-only files and placeholder/source-only assets from the production-ready tree.
+- Updated TypeScript module resolution for the newer compiler deprecation behavior.
+- Improved symbol-key search for punctuation-heavy shortcuts.
