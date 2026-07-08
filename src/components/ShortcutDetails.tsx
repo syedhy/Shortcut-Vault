@@ -15,7 +15,7 @@ export function ShortcutDetails({ shortcut }: Props) {
     "",
     `**Owner:** ${shortcut.ownerName}`,
     "",
-    `**Owner Type:** ${OWNER_TYPE_LABELS[shortcut.ownerType]}`,
+    `**Owner Kind:** ${OWNER_TYPE_LABELS[shortcut.ownerType]}`,
     "",
     `**Scope:** ${SCOPE_LABELS[shortcut.scope]}`,
     "",

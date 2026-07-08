@@ -11,10 +11,10 @@ import {
   useNavigation,
 } from "@raycast/api";
 import { useEffect, useState } from "react";
-import { MODIFIER_LABELS, OWNER_TYPE_LABELS, SCOPE_LABELS } from "../lib/labels";
+import { MODIFIER_LABELS, SCOPE_LABELS } from "../lib/labels";
+import { GENERAL_OWNER_NAME, inferCustomOwnerType } from "../lib/owner-type";
 import { getShortcutOwnerOptions, type ShortcutOwnerOption } from "../lib/shortcut-data";
 import {
-  GENERAL_OWNER_NAME,
   createCustomShortcut,
   findDuplicateCustomShortcut,
   updateCustomShortcut,
@@ -23,7 +23,6 @@ import { formatShortcutDisplay } from "../lib/shortcut-format";
 import { hasFormErrors, validateShortcutForm, type FormErrors } from "../lib/validation";
 import {
   MODIFIERS,
-  type OwnerType,
   type Shortcut,
   type ShortcutFormValues,
   type ShortcutModifier,
@@ -268,7 +267,7 @@ function getCanonicalOwnerValues(
     return { ...values, ownerName: option.ownerName, ownerType: option.ownerType };
   }
 
-  return { ...values, ownerName, ownerType: inferFormOwnerType(values.scope) };
+  return { ...values, ownerName, ownerType: inferCustomOwnerType(ownerName, values.scope) };
 }
 
 function getMatchingOwnerOption(
@@ -294,21 +293,10 @@ function getOwnerStatus(ownerName: string, ownerMatch: ShortcutOwnerOption | und
   }
 
   if (ownerMatch) {
-    return `Existing owner: ${ownerMatch.ownerName} • ${OWNER_TYPE_LABELS[ownerMatch.ownerType]}`;
+    return `Existing owner: ${ownerMatch.ownerName}`;
   }
 
   return `Creates owner: ${trimmedOwnerName}.`;
-}
-
-function inferFormOwnerType(scope: ShortcutFormValues["scope"]): OwnerType {
-  switch (scope) {
-    case "app":
-      return "mac-app";
-    case "webapp":
-      return "webapp";
-    case "global":
-      return "other";
-  }
 }
 
 function getModifierColor(modifier: ShortcutModifier): Color.ColorLike {

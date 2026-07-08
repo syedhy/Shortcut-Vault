@@ -1,4 +1,4 @@
-import type { OwnerType, ScopeType, Shortcut, ShortcutModifier } from "../types/shortcut";
+import type { Shortcut, ShortcutModifier } from "../types/shortcut";
 import { MODIFIER_SYMBOLS, SCOPE_LABELS, SOURCE_LABELS } from "./labels";
 
 const modifierOrder: ShortcutModifier[] = ["command", "option", "control", "shift", "fn"];
@@ -47,18 +47,6 @@ export function formatShortcutDisplay(modifiers: ShortcutModifier[], key: string
   }
 
   return parts.join(" + ");
-}
-
-export function inferOwnerType(scope: ScopeType): OwnerType {
-  if (scope === "webapp") {
-    return "webapp";
-  }
-
-  if (scope === "app") {
-    return "mac-app";
-  }
-
-  return "other";
 }
 
 export function getShortcutSubtitle(shortcut: Shortcut): string {

@@ -6,15 +6,11 @@ import {
   type Shortcut,
   type ShortcutFormValues,
 } from "../types/shortcut";
-import {
-  formatShortcutDisplay,
-  inferOwnerType,
-  normalizeKey,
-  normalizeModifiers,
-} from "./shortcut-format";
+import { formatShortcutDisplay, normalizeKey, normalizeModifiers } from "./shortcut-format";
+import { GENERAL_OWNER_NAME, inferCustomOwnerType } from "./owner-type";
 
 const CUSTOM_SHORTCUTS_KEY = "shortcut-vault.custom-shortcuts";
-export const GENERAL_OWNER_NAME = "General";
+export { GENERAL_OWNER_NAME };
 
 export async function getCustomShortcuts(): Promise<Shortcut[]> {
   const raw = await LocalStorage.getItem<string>(CUSTOM_SHORTCUTS_KEY);
@@ -50,7 +46,7 @@ export async function createCustomShortcut(values: ShortcutFormValues): Promise<
     key: normalizeKey(values.key),
     shortcutDisplay: formatShortcutDisplay(values.modifiers, values.key),
     ownerName: normalizeOwnerName(values.ownerName),
-    ownerType: values.ownerType ?? inferOwnerType(values.scope),
+    ownerType: values.ownerType ?? inferCustomOwnerType(values.ownerName, values.scope),
     scope: values.scope,
     notes: values.notes.trim() || undefined,
     sourceType: "custom",
@@ -80,7 +76,7 @@ export async function updateCustomShortcut(
     key: normalizeKey(values.key),
     shortcutDisplay: formatShortcutDisplay(values.modifiers, values.key),
     ownerName: normalizeOwnerName(values.ownerName),
-    ownerType: values.ownerType ?? inferOwnerType(values.scope),
+    ownerType: values.ownerType ?? inferCustomOwnerType(values.ownerName, values.scope),
     scope: values.scope,
     notes: values.notes.trim() || undefined,
     updatedAt: new Date().toISOString(),
@@ -174,17 +170,19 @@ function parseStoredShortcut(value: unknown): Shortcut {
   const key = requireString(value.key, "key");
   const typedModifiers = modifiers as Shortcut["modifiers"];
 
+  const ownerName = requireString(value.ownerName, "ownerName");
+  const typedScope = scope as Shortcut["scope"];
+  const typedOwnerType = ownerType as Shortcut["ownerType"] | undefined;
+
   return {
     id: requireString(value.id, "id"),
     commandName: requireString(value.commandName, "commandName"),
     modifiers: normalizeModifiers(typedModifiers),
     key: normalizeKey(key),
     shortcutDisplay: formatShortcutDisplay(typedModifiers, key),
-    ownerName: requireString(value.ownerName, "ownerName"),
-    ownerType: ownerType
-      ? (ownerType as Shortcut["ownerType"])
-      : inferOwnerType(scope as Shortcut["scope"]),
-    scope: scope as Shortcut["scope"],
+    ownerName,
+    ownerType: normalizeStoredOwnerType(ownerName, typedScope, typedOwnerType),
+    scope: typedScope,
     notes: typeof value.notes === "string" && value.notes.trim() ? value.notes : undefined,
     sourceType: "custom",
     sourceUrl:
@@ -192,6 +190,18 @@ function parseStoredShortcut(value: unknown): Shortcut {
     createdAt: requireString(value.createdAt, "createdAt"),
     updatedAt: requireString(value.updatedAt, "updatedAt"),
   };
+}
+
+function normalizeStoredOwnerType(
+  ownerName: string,
+  scope: Shortcut["scope"],
+  ownerType: Shortcut["ownerType"] | undefined,
+): Shortcut["ownerType"] {
+  if (!ownerType || ownerType === "other") {
+    return inferCustomOwnerType(ownerName, scope);
+  }
+
+  return ownerType;
 }
 
 function requireString(value: unknown, fieldName: string): string {

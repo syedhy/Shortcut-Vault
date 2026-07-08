@@ -298,6 +298,20 @@ Scope:
 - [x] Add final license and changelog files.
 - [x] Update final user handoff documentation.
 
+### Phase 18: Scope and Owner Kind Clarification
+
+Status: Complete
+
+Scope:
+
+- [x] Clarify that scope means where a shortcut works.
+- [x] Stop deriving named global shortcut owners as `other`.
+- [x] Treat blank owners as `General`.
+- [x] Treat named global and app shortcut owners as app owners by default.
+- [x] Treat named webapp shortcut owners as webapp owners by default.
+- [x] Remove owner kind from Add/Edit Shortcut owner match preview.
+- [x] Add focused owner-kind inference tests.
+
 ## Decisions Made
 
 - Use Raycast `LocalStorage` for custom shortcuts because it is local, supported by Raycast, and does not introduce sync or account dependencies.
@@ -312,7 +326,8 @@ Scope:
 - Use a build-time generator for default shortcut JSON discovery. This keeps runtime code simple while allowing future default databases to be added by adding JSON files.
 - Use Raycast `Form.FilePicker` for import because the API supports file selection as part of a Raycast form, and the product requirement asks for an information page before file selection.
 - Export JSON to `environment.supportPath/exports` and offer copy/show actions because Raycast does not need cloud storage or external services for local export.
-- Infer `ownerType` for manually added shortcuts from scope: `webapp` for Webapp, `mac-app` for App, and `other` for Global. This keeps the Add Shortcut form focused on the fields users expect.
+- Keep scope and owner kind separate. Scope describes where the shortcut works: Global works anywhere on the Mac, App works inside the owner app, and Webapp works inside the owner webapp.
+- Infer custom owner kind from owner name plus scope: blank owners save as `General`/`other`, named Webapp owners save as `webapp`, and other named owners save as `mac-app` even when their scope is Global.
 - Use the provided command-symbol artwork as the real extension icon.
 - Preserve a generated reference variant separately instead of wiring it into the manifest, because the provided source image is the closest match to the requested exact icon.
 - Apply transparent rounded corners directly to `assets/icon.png` so the icon presents cleanly even if a host surface does not mask square PNGs.
@@ -1342,3 +1357,61 @@ Remaining work:
 
 - User must capture and add final real screenshots.
 - User must run the final Raycast publish/store flow when ready.
+
+## Phase 18 Completion Notes
+
+Completed on 2026-07-09.
+
+Implemented:
+
+- Clarified scope semantics: Global means the shortcut works anywhere on the Mac; App means inside the owner app; Webapp means inside the owner webapp.
+- Removed owner kind from the Add/Edit Shortcut `Owner Match` preview so it now shows text like `Existing owner: Aerospace`.
+- Added `inferCustomOwnerType` to keep owner kind separate from scope.
+- Updated custom shortcut creation/editing so named Global shortcuts default to `mac-app` ownership instead of `other`.
+- Normalized stored custom shortcuts so older named shortcuts saved as `other` read back as app-owned unless they are `General`.
+- Renamed the details label from `Owner Type` to `Owner Kind`.
+- Changed the `other` owner-kind label to `General` for user-facing copy.
+- Added focused owner-kind inference tests.
+
+Created files:
+
+- `scripts/test-owner-type.ts`
+- `src/lib/owner-type.ts`
+
+Modified files:
+
+- `README.md`
+- `package.json`
+- `plan.md`
+- `src/components/ShortcutDetails.tsx`
+- `src/components/ShortcutForm.tsx`
+- `src/lib/labels.ts`
+- `src/lib/shortcut-format.ts`
+- `src/lib/storage.ts`
+
+Deleted files:
+
+- None.
+
+Verification:
+
+- `npm run test` passed.
+- `npm run typecheck` passed.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run dev` started successfully, compiled all seven command entry points, and was stopped after verification.
+
+Expected behavior:
+
+- Typing `Aerospace` in Add/Edit Shortcut shows `Existing owner: Aerospace`.
+- A named global custom shortcut is still app-owned, while its scope remains Global.
+- Blank owner still saves as `General`.
+- Search tags continue to show owner, source, and scope separately.
+
+Tradeoffs:
+
+- Owner kind is still retained internally for import/export, search, and future filtering, but Add/Edit avoids showing it where it can be confused with scope.
+
+Next:
+
+- Final user screenshot capture and Raycast publishing steps remain the only expected human-owned tasks.

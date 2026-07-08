@@ -20,7 +20,7 @@ export const OWNER_TYPE_LABELS: Record<OwnerType, string> = {
   "mac-app": "Mac App",
   webapp: "Webapp",
   system: "System",
-  other: "Other",
+  other: "General",
 };
 
 export const SCOPE_LABELS: Record<ScopeType, string> = {

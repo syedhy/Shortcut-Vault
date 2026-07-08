@@ -173,13 +173,15 @@ Supported owner types:
 - `mac-app`
 - `webapp`
 - `system`
-- `other`
+- `other` for General or uncategorized owners
 
 Supported scopes:
 
 - `global`
 - `app`
 - `webapp`
+
+Scope describes where the shortcut works: `global` works anywhere on the Mac, `app` works inside the owner app, and `webapp` works inside the owner webapp. Scope does not decide the owner type.
 
 Supported modifiers:
 
@@ -366,3 +368,9 @@ Before submission:
 - Hardened empty export and empty import behavior.
 - Avoided imported ID collisions with bundled default shortcuts.
 - Added final store-readiness docs, license, and changelog.
+
+### Phase 18
+
+- Clarified that scope describes where a shortcut works, not what owns it.
+- Stopped showing owner kind in the Add/Edit owner match preview.
+- Treated named global custom shortcuts as app-owned shortcuts instead of generic Other shortcuts.

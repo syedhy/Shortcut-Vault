@@ -66,9 +66,10 @@
   "scripts": {
     "validate-data": "node scripts/validate-default-shortcuts.mjs",
     "generate-data": "npm run validate-data && node scripts/generate-default-shortcuts.mjs && prettier --write src/data/generated-default-shortcuts.ts",
-    "test": "npm run validate-data && npm run test:search && npm run test:import-export",
+    "test": "npm run validate-data && npm run test:search && npm run test:import-export && npm run test:owner-type",
     "test:search": "rm -rf .tmp/test-build && tsc --project tsconfig.test.json && node .tmp/test-build/scripts/test-shortcut-search.js",
     "test:import-export": "rm -rf .tmp/test-build && tsc --project tsconfig.test.json && node .tmp/test-build/scripts/test-import-export-format.js",
+    "test:owner-type": "rm -rf .tmp/test-build && tsc --project tsconfig.test.json && node .tmp/test-build/scripts/test-owner-type.js",
     "build": "npm run generate-data && ray build -e dist",
     "dev": "npm run generate-data && ray develop",
     "lint": "ray lint",
