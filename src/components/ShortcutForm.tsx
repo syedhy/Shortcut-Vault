@@ -11,7 +11,7 @@ import {
   useNavigation,
 } from "@raycast/api";
 import { useEffect, useState } from "react";
-import { MODIFIER_LABELS, SCOPE_LABELS } from "../lib/labels";
+import { MODIFIER_LABELS, OWNER_TYPE_LABELS, SCOPE_LABELS } from "../lib/labels";
 import { getShortcutOwnerOptions, type ShortcutOwnerOption } from "../lib/shortcut-data";
 import {
   GENERAL_OWNER_NAME,
@@ -205,7 +205,23 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
           }))
         }
       />
-      <Form.Description title="Owner Match" text={ownerStatus} />
+      {ownerMatch ? (
+        <Form.TagPicker
+          id="ownerMatchPreview"
+          title="Owner Match"
+          info="This typed owner already exists and will be reused with its saved owner type."
+          value={[ownerMatch.ownerName]}
+          onChange={() => undefined}
+        >
+          <Form.TagPicker.Item
+            value={ownerMatch.ownerName}
+            title={`${ownerMatch.ownerName} • Existing ${OWNER_TYPE_LABELS[ownerMatch.ownerType]}`}
+            icon={{ source: Icon.Circle, tintColor: getOwnerTypeColor(ownerMatch.ownerType) }}
+          />
+        </Form.TagPicker>
+      ) : (
+        <Form.Description title="Owner Match" text={ownerStatus} />
+      )}
       <Form.Dropdown
         id="scope"
         title="Scope"
@@ -323,5 +339,18 @@ function getModifierColor(modifier: ShortcutModifier): Color.ColorLike {
       return Color.Orange;
     case "fn":
       return Color.SecondaryText;
+  }
+}
+
+function getOwnerTypeColor(ownerType: OwnerType): Color.ColorLike {
+  switch (ownerType) {
+    case "mac-app":
+      return Color.Blue;
+    case "webapp":
+      return Color.Green;
+    case "system":
+      return Color.Orange;
+    case "other":
+      return Color.Purple;
   }
 }
