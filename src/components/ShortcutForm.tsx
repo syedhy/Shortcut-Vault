@@ -10,7 +10,7 @@ import {
   showToast,
   useNavigation,
 } from "@raycast/api";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MODIFIER_LABELS, SCOPE_LABELS } from "../lib/labels";
 import { GENERAL_OWNER_NAME, inferCustomOwnerType } from "../lib/owner-type";
 import { getShortcutOwnerOptions, type ShortcutOwnerOption } from "../lib/shortcut-data";
@@ -33,16 +33,6 @@ type Props = {
   onSaved?: () => void;
 };
 
-const emptyValues: ShortcutFormValues = {
-  commandName: "",
-  modifiers: [],
-  key: "",
-  ownerName: "",
-  ownerType: "other",
-  scope: "global",
-  notes: "",
-};
-
 export function ShortcutForm({ shortcut, onSaved }: Props) {
   const { pop } = useNavigation();
   const [values, setValues] = useState<ShortcutFormValues>(() =>
@@ -56,10 +46,11 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
           scope: shortcut.scope,
           notes: shortcut.notes ?? "",
         }
-      : emptyValues,
+      : createEmptyValues(),
   );
   const [errors, setErrors] = useState<FormErrors>({});
   const [ownerOptions, setOwnerOptions] = useState<ShortcutOwnerOption[]>([]);
+  const [formResetKey, setFormResetKey] = useState(0);
   const preview = formatShortcutDisplay(values.modifiers, values.key);
   const isEditing = Boolean(shortcut);
   const submittedValues = getCanonicalOwnerValues(values, ownerOptions);
@@ -67,17 +58,21 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
   const ownerMatch = getMatchingOwnerOption(values.ownerName, ownerOptions);
   const ownerStatus = getOwnerStatus(values.ownerName, ownerMatch);
 
-  useEffect(() => {
-    void getShortcutOwnerOptions()
-      .then(setOwnerOptions)
-      .catch(async (error) => {
-        await showToast({
-          style: Toast.Style.Failure,
-          title: "Could not load owners",
-          message: error instanceof Error ? error.message : "You can still type an owner manually.",
-        });
+  const refreshOwnerOptions = useCallback(async () => {
+    try {
+      setOwnerOptions(await getShortcutOwnerOptions());
+    } catch (error) {
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "Could not load owners",
+        message: error instanceof Error ? error.message : "You can still type an owner manually.",
       });
+    }
   }, []);
+
+  useEffect(() => {
+    void refreshOwnerOptions();
+  }, [refreshOwnerOptions]);
 
   async function handleSubmit() {
     const nextErrors = validateShortcutForm(submittedValues);
@@ -118,9 +113,11 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
       }
 
       await createCustomShortcut(submittedValues);
+      await refreshOwnerOptions();
       await showToast({ style: Toast.Style.Success, title: "Shortcut saved", message: preview });
-      setValues(emptyValues);
+      setValues(createEmptyValues());
       setErrors({});
+      setFormResetKey((current) => current + 1);
       onSaved?.();
     } catch (error) {
       await showToast({
@@ -133,6 +130,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
 
   return (
     <Form
+      key={isEditing ? shortcut?.id : formResetKey}
       navigationTitle={isEditing ? "Edit Shortcut" : "Add Shortcut"}
       actions={
         <ActionPanel>
@@ -247,6 +245,18 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
       />
     </Form>
   );
+}
+
+function createEmptyValues(): ShortcutFormValues {
+  return {
+    commandName: "",
+    modifiers: [],
+    key: "",
+    ownerName: "",
+    ownerType: "other",
+    scope: "global",
+    notes: "",
+  };
 }
 
 function getCanonicalOwnerValues(
