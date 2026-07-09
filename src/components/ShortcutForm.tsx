@@ -10,7 +10,7 @@ import {
   showToast,
   useNavigation,
 } from "@raycast/api";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MODIFIER_LABELS, SCOPE_LABELS } from "../lib/labels";
 import { GENERAL_OWNER_NAME, inferCustomOwnerType } from "../lib/owner-type";
 import { getShortcutOwnerOptions, type ShortcutOwnerOption } from "../lib/shortcut-data";
@@ -35,22 +35,17 @@ type Props = {
 
 export function ShortcutForm({ shortcut, onSaved }: Props) {
   const { pop } = useNavigation();
-  const [values, setValues] = useState<ShortcutFormValues>(() =>
-    shortcut
-      ? {
-          commandName: shortcut.commandName,
-          modifiers: shortcut.modifiers,
-          key: shortcut.key,
-          ownerName: shortcut.ownerName,
-          ownerType: shortcut.ownerType,
-          scope: shortcut.scope,
-          notes: shortcut.notes ?? "",
-        }
-      : createEmptyValues(),
-  );
+  const initialValues = shortcut ? getShortcutFormValues(shortcut) : createEmptyValues();
+  const [values, setValues] = useState<ShortcutFormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors>({});
   const [ownerOptions, setOwnerOptions] = useState<ShortcutOwnerOption[]>([]);
   const [formResetKey, setFormResetKey] = useState(0);
+  const commandNameRef = useRef<Form.TextField>(null);
+  const modifiersRef = useRef<Form.TagPicker>(null);
+  const keyRef = useRef<Form.TextField>(null);
+  const ownerNameRef = useRef<Form.TextField>(null);
+  const scopeRef = useRef<Form.Dropdown>(null);
+  const notesRef = useRef<Form.TextArea>(null);
   const preview = formatShortcutDisplay(values.modifiers, values.key);
   const isEditing = Boolean(shortcut);
   const submittedValues = getCanonicalOwnerValues(values, ownerOptions);
@@ -74,9 +69,19 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
     void refreshOwnerOptions();
   }, [refreshOwnerOptions]);
 
-  async function handleSubmit() {
-    const nextErrors = validateShortcutForm(submittedValues);
+  async function handleSubmit(formValues: Form.Values) {
+    const nextSubmittedValues = getCanonicalOwnerValues(
+      getSubmittedFormValues(formValues, values),
+      ownerOptions,
+    );
+    const nextPreview = formatShortcutDisplay(
+      nextSubmittedValues.modifiers,
+      nextSubmittedValues.key,
+    );
+    const nextOwnerPreview = nextSubmittedValues.ownerName.trim() || GENERAL_OWNER_NAME;
+    const nextErrors = validateShortcutForm(nextSubmittedValues);
     setErrors(nextErrors);
+    setValues(nextSubmittedValues);
 
     if (hasFormErrors(nextErrors)) {
       await showToast({
@@ -88,11 +93,11 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
     }
 
     try {
-      const duplicate = await findDuplicateCustomShortcut(submittedValues, shortcut?.id);
+      const duplicate = await findDuplicateCustomShortcut(nextSubmittedValues, shortcut?.id);
       if (duplicate) {
         const confirmed = await confirmAlert({
           title: "Save duplicate shortcut?",
-          message: `${preview} already exists for ${ownerPreview} as ${duplicate.commandName}.`,
+          message: `${nextPreview} already exists for ${nextOwnerPreview} as ${duplicate.commandName}.`,
           primaryAction: {
             title: "Save Anyway",
             style: Alert.ActionStyle.Default,
@@ -105,14 +110,14 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
       }
 
       if (shortcut) {
-        await updateCustomShortcut(shortcut.id, submittedValues);
+        await updateCustomShortcut(shortcut.id, nextSubmittedValues);
         await showToast({ style: Toast.Style.Success, title: "Shortcut updated" });
         onSaved?.();
         pop();
         return;
       }
 
-      const savedShortcut = await createCustomShortcut(submittedValues);
+      const savedShortcut = await createCustomShortcut(nextSubmittedValues);
       setErrors({});
       setOwnerOptions((current) =>
         upsertOwnerOption(current, {
@@ -120,10 +125,11 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
           ownerType: savedShortcut.ownerType,
         }),
       );
+      resetFormItems();
       setValues(createEmptyValues());
       setFormResetKey((current) => current + 1);
       void refreshOwnerOptions();
-      void showToast({ style: Toast.Style.Success, title: "Shortcut saved", message: preview });
+      void showToast({ style: Toast.Style.Success, title: "Shortcut saved", message: nextPreview });
       onSaved?.();
     } catch (error) {
       await showToast({
@@ -161,9 +167,10 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         title="Command Name"
         placeholder="New Tab"
         info="Use the exact action name you want to find later."
-        value={values.commandName}
+        defaultValue={initialValues.commandName}
         error={errors.commandName}
         onChange={(commandName) => setValues((current) => ({ ...current, commandName }))}
+        ref={commandNameRef}
       />
       <Form.Separator />
       <Form.TagPicker
@@ -171,10 +178,11 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         id="modifiers"
         title="Modifiers"
         info="Pick every modifier in the shortcut. The preview updates immediately."
-        value={values.modifiers}
+        defaultValue={initialValues.modifiers}
         onChange={(modifiers) =>
           setValues((current) => ({ ...current, modifiers: modifiers as ShortcutModifier[] }))
         }
+        ref={modifiersRef}
       >
         {MODIFIERS.map((modifier) => (
           <Form.TagPicker.Item
@@ -191,9 +199,10 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         title="Key"
         placeholder="T, E, Enter, Space, 1"
         info="Enter the final key only. Examples: T, Enter, Space, 1."
-        value={values.key}
+        defaultValue={initialValues.key}
         error={errors.key}
         onChange={(key) => setValues((current) => ({ ...current, key }))}
+        ref={keyRef}
       />
       <Form.Description title="Preview" text={preview} />
       <Form.Separator />
@@ -203,7 +212,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         title="Owner App/Webapp"
         placeholder="General, Safari, Gmail, Raycast"
         info="Type an owner. Existing owner names are reused automatically; blank saves as General."
-        value={values.ownerName}
+        defaultValue={initialValues.ownerName}
         error={errors.ownerName}
         onChange={(ownerName) =>
           setValues((current) => ({
@@ -211,6 +220,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
             ownerName,
           }))
         }
+        ref={ownerNameRef}
       />
       <Form.Description title="Owner Match" text={ownerStatus} />
       <Form.Dropdown
@@ -218,11 +228,12 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         id="scope"
         title="Scope"
         info="Scope controls the colored scope bubble shown in search results."
-        value={values.scope}
+        defaultValue={initialValues.scope}
         error={errors.scope}
         onChange={(scope) =>
           setValues((current) => ({ ...current, scope: scope as ShortcutFormValues["scope"] }))
         }
+        ref={scopeRef}
       >
         <Form.Dropdown.Item
           value="global"
@@ -252,11 +263,34 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         id="notes"
         title="Notes"
         placeholder="Optional context, caveats, or where this shortcut is configured."
-        value={values.notes}
+        defaultValue={initialValues.notes}
         onChange={(notes) => setValues((current) => ({ ...current, notes }))}
+        ref={notesRef}
       />
     </Form>
   );
+
+  function resetFormItems() {
+    commandNameRef.current?.reset();
+    modifiersRef.current?.reset();
+    keyRef.current?.reset();
+    ownerNameRef.current?.reset();
+    scopeRef.current?.reset();
+    notesRef.current?.reset();
+    commandNameRef.current?.focus();
+  }
+}
+
+function getShortcutFormValues(shortcut: Shortcut): ShortcutFormValues {
+  return {
+    commandName: shortcut.commandName,
+    modifiers: shortcut.modifiers,
+    key: shortcut.key,
+    ownerName: shortcut.ownerName,
+    ownerType: shortcut.ownerType,
+    scope: shortcut.scope,
+    notes: shortcut.notes ?? "",
+  };
 }
 
 function createEmptyValues(): ShortcutFormValues {
@@ -269,6 +303,45 @@ function createEmptyValues(): ShortcutFormValues {
     scope: "global",
     notes: "",
   };
+}
+
+function getSubmittedFormValues(
+  formValues: Form.Values,
+  fallbackValues: ShortcutFormValues,
+): ShortcutFormValues {
+  return {
+    commandName: getStringFormValue(formValues.commandName, fallbackValues.commandName),
+    modifiers: getModifierFormValues(formValues.modifiers, fallbackValues.modifiers),
+    key: getStringFormValue(formValues.key, fallbackValues.key),
+    ownerName: getStringFormValue(formValues.ownerName, fallbackValues.ownerName),
+    ownerType: fallbackValues.ownerType,
+    scope: getScopeFormValue(formValues.scope, fallbackValues.scope),
+    notes: getStringFormValue(formValues.notes, fallbackValues.notes),
+  };
+}
+
+function getStringFormValue(value: Form.Value, fallback: string): string {
+  return typeof value === "string" ? value : fallback;
+}
+
+function getModifierFormValues(
+  value: Form.Value,
+  fallback: ShortcutModifier[],
+): ShortcutModifier[] {
+  if (!Array.isArray(value)) {
+    return fallback;
+  }
+
+  return value.filter((modifier): modifier is ShortcutModifier =>
+    MODIFIERS.includes(modifier as ShortcutModifier),
+  );
+}
+
+function getScopeFormValue(
+  value: Form.Value,
+  fallback: ShortcutFormValues["scope"],
+): ShortcutFormValues["scope"] {
+  return value === "global" || value === "app" || value === "webapp" ? value : fallback;
 }
 
 function getCanonicalOwnerValues(

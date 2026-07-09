@@ -359,7 +359,7 @@ Scope:
 
 - [x] Refresh existing owner options after saving a new custom shortcut.
 - [x] Reset Add Shortcut values with a fresh form state immediately after each successful save.
-- [x] Remount the add form fields after save so Raycast form controls do not keep stale internal state.
+- [x] Reset Raycast native form fields after save so visible input values clear immediately.
 - [x] Add newly saved owners to the owner-match options immediately.
 - [x] Preserve edit behavior and existing Manage Custom Shortcuts save flow.
 - [x] Verify data validation, typecheck, lint, Raycast build, and dev compile.
@@ -401,7 +401,7 @@ Scope:
 - Cap rendered search results for broad queries while still searching the full loaded library. This keeps initial search screens snappy after database expansion.
 - Use `module: "ESNext"` with `moduleResolution: "bundler"` for TypeScript. `moduleResolution: "bundler"` is the right modern resolution mode for this Raycast/TypeScript setup, but it must be paired with an ES module output target rather than `commonjs`.
 - Keep official-source expansion focused on owners already in the app instead of adding new app families during this pass. This improves depth without changing UI, storage, or search architecture.
-- After a successful Add Shortcut save, clear and remount the add form fields before non-essential follow-up work such as toast display and owner refresh. This matches the behavior of reopening the command without disturbing edit forms pushed from Manage Custom Shortcuts.
+- After a successful Add Shortcut save, reset Raycast's native form fields before non-essential follow-up work such as toast display and owner refresh. This matches the behavior of reopening the command without disturbing edit forms pushed from Manage Custom Shortcuts.
 
 ## Tradeoffs
 
@@ -1689,10 +1689,11 @@ Implemented:
 
 - Fixed the repeated Add Shortcut flow after saving a shortcut without closing the command.
 - Cleared Add Shortcut fields immediately after each successful new shortcut save.
+- Switched Add Shortcut fields to Raycast native `defaultValue` plus field refs so `.reset()` clears the visible native form controls.
 - Added newly saved owners to the current owner options immediately.
 - Refreshed existing owner options asynchronously after each successful new shortcut save.
 - Reset Add Shortcut values with a fresh object instead of reusing one shared empty values object.
-- Remounted the Add Shortcut form fields after save so Raycast form controls do not retain stale internal field state.
+- Captured submitted values from Raycast's native form payload so saving remains aligned with what the user sees.
 - Kept edit-mode save behavior unchanged: editing still saves, calls the parent refresh callback, and pops back to the previous view.
 
 Created files:
