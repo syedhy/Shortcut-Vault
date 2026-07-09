@@ -14,4 +14,4 @@
 - Pruned test-only files and placeholder/source-only assets from the production-ready tree.
 - Updated TypeScript module resolution for the newer compiler deprecation behavior.
 - Improved symbol-key search for punctuation-heavy shortcuts.
-- Refreshed and remounted the Add Shortcut form after saves so repeated entry works like reopening the command.
+- Immediately clears and remounts the Add Shortcut form after saves so repeated entry works like reopening the command.

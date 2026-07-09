@@ -358,8 +358,9 @@ Status: Complete
 Scope:
 
 - [x] Refresh existing owner options after saving a new custom shortcut.
-- [x] Reset Add Shortcut values with a fresh form state after each successful save.
-- [x] Remount the add form after save so Raycast form controls do not keep stale internal state.
+- [x] Reset Add Shortcut values with a fresh form state immediately after each successful save.
+- [x] Remount the add form fields after save so Raycast form controls do not keep stale internal state.
+- [x] Add newly saved owners to the owner-match options immediately.
 - [x] Preserve edit behavior and existing Manage Custom Shortcuts save flow.
 - [x] Verify data validation, typecheck, lint, Raycast build, and dev compile.
 
@@ -400,7 +401,7 @@ Scope:
 - Cap rendered search results for broad queries while still searching the full loaded library. This keeps initial search screens snappy after database expansion.
 - Use `module: "ESNext"` with `moduleResolution: "bundler"` for TypeScript. `moduleResolution: "bundler"` is the right modern resolution mode for this Raycast/TypeScript setup, but it must be paired with an ES module output target rather than `commonjs`.
 - Keep official-source expansion focused on owners already in the app instead of adding new app families during this pass. This improves depth without changing UI, storage, or search architecture.
-- After a successful Add Shortcut save, refresh owner options from storage and remount only the add form. This matches the behavior of reopening the command without disturbing edit forms pushed from Manage Custom Shortcuts.
+- After a successful Add Shortcut save, clear and remount the add form fields before non-essential follow-up work such as toast display and owner refresh. This matches the behavior of reopening the command without disturbing edit forms pushed from Manage Custom Shortcuts.
 
 ## Tradeoffs
 
@@ -1687,9 +1688,11 @@ Completed on 2026-07-09.
 Implemented:
 
 - Fixed the repeated Add Shortcut flow after saving a shortcut without closing the command.
-- Refreshed existing owner options after each successful new shortcut save.
+- Cleared Add Shortcut fields immediately after each successful new shortcut save.
+- Added newly saved owners to the current owner options immediately.
+- Refreshed existing owner options asynchronously after each successful new shortcut save.
 - Reset Add Shortcut values with a fresh object instead of reusing one shared empty values object.
-- Remounted the Add Shortcut form after save so Raycast form controls do not retain stale internal field state.
+- Remounted the Add Shortcut form fields after save so Raycast form controls do not retain stale internal field state.
 - Kept edit-mode save behavior unchanged: editing still saves, calls the parent refresh callback, and pops back to the previous view.
 
 Created files:
@@ -1714,13 +1717,13 @@ Verification:
 Expected behavior:
 
 - Add Shortcut can be used repeatedly in one command session.
-- After saving one shortcut, the next shortcut entry starts from a clean form.
+- After saving one shortcut, the form clears immediately and the next shortcut entry starts from a clean form.
 - Newly created owners are available to the owner-match logic immediately on the next entry.
 - The behavior should match closing and reopening Add Shortcut, without making the user leave the command.
 
 Tradeoffs:
 
-- The form remount is intentionally limited to add mode. Edit forms keep their existing navigation behavior to avoid unexpected field resets while editing an existing shortcut.
+- Field remounting is intentionally limited to add mode. Edit forms keep their existing navigation behavior to avoid unexpected field resets while editing an existing shortcut.
 
 Next:
 

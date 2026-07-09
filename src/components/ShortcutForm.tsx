@@ -112,12 +112,18 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         return;
       }
 
-      await createCustomShortcut(submittedValues);
-      await refreshOwnerOptions();
-      await showToast({ style: Toast.Style.Success, title: "Shortcut saved", message: preview });
-      setValues(createEmptyValues());
+      const savedShortcut = await createCustomShortcut(submittedValues);
       setErrors({});
+      setOwnerOptions((current) =>
+        upsertOwnerOption(current, {
+          ownerName: savedShortcut.ownerName,
+          ownerType: savedShortcut.ownerType,
+        }),
+      );
+      setValues(createEmptyValues());
       setFormResetKey((current) => current + 1);
+      void refreshOwnerOptions();
+      void showToast({ style: Toast.Style.Success, title: "Shortcut saved", message: preview });
       onSaved?.();
     } catch (error) {
       await showToast({
@@ -150,6 +156,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
       }
     >
       <Form.TextField
+        key={`commandName-${formResetKey}`}
         id="commandName"
         title="Command Name"
         placeholder="New Tab"
@@ -160,6 +167,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
       />
       <Form.Separator />
       <Form.TagPicker
+        key={`modifiers-${formResetKey}`}
         id="modifiers"
         title="Modifiers"
         info="Pick every modifier in the shortcut. The preview updates immediately."
@@ -178,6 +186,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         ))}
       </Form.TagPicker>
       <Form.TextField
+        key={`key-${formResetKey}`}
         id="key"
         title="Key"
         placeholder="T, E, Enter, Space, 1"
@@ -189,6 +198,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
       <Form.Description title="Preview" text={preview} />
       <Form.Separator />
       <Form.TextField
+        key={`ownerName-${formResetKey}`}
         id="ownerName"
         title="Owner App/Webapp"
         placeholder="General, Safari, Gmail, Raycast"
@@ -204,6 +214,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
       />
       <Form.Description title="Owner Match" text={ownerStatus} />
       <Form.Dropdown
+        key={`scope-${formResetKey}`}
         id="scope"
         title="Scope"
         info="Scope controls the colored scope bubble shown in search results."
@@ -237,6 +248,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         text={`${ownerPreview} • Custom • ${values.scope === "global" ? "Global" : values.scope === "app" ? "App" : "Webapp"}`}
       />
       <Form.TextArea
+        key={`notes-${formResetKey}`}
         id="notes"
         title="Notes"
         placeholder="Optional context, caveats, or where this shortcut is configured."
@@ -307,6 +319,25 @@ function getOwnerStatus(ownerName: string, ownerMatch: ShortcutOwnerOption | und
   }
 
   return `Creates owner: ${trimmedOwnerName}.`;
+}
+
+function upsertOwnerOption(
+  ownerOptions: ShortcutOwnerOption[],
+  savedOwner: ShortcutOwnerOption,
+): ShortcutOwnerOption[] {
+  if (savedOwner.ownerName.toLocaleLowerCase() === GENERAL_OWNER_NAME.toLocaleLowerCase()) {
+    return ownerOptions;
+  }
+
+  if (
+    ownerOptions.some(
+      (owner) => owner.ownerName.toLocaleLowerCase() === savedOwner.ownerName.toLocaleLowerCase(),
+    )
+  ) {
+    return ownerOptions;
+  }
+
+  return [...ownerOptions, savedOwner].sort((a, b) => a.ownerName.localeCompare(b.ownerName));
 }
 
 function getModifierColor(modifier: ShortcutModifier): Color.ColorLike {
