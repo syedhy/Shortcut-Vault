@@ -176,7 +176,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         title="Command Name"
         placeholder="New Tab"
         info="Use the exact action name you want to find later."
-        defaultValue={initialValues.commandName}
+        value={values.commandName}
         error={errors.commandName}
         onChange={(commandName) => setValues((current) => ({ ...current, commandName }))}
         ref={commandNameRef}
@@ -187,7 +187,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         id="modifiers"
         title="Modifiers"
         info="Pick every modifier in the shortcut. The preview updates immediately."
-        defaultValue={initialValues.modifiers}
+        value={values.modifiers}
         onChange={(modifiers) =>
           setValues((current) => ({ ...current, modifiers: modifiers as ShortcutModifier[] }))
         }
@@ -208,7 +208,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         title="Key"
         placeholder="T, E, Enter, Space, 1"
         info="Enter the final key only. Examples: T, Enter, Space, 1."
-        defaultValue={initialValues.key}
+        value={values.key}
         error={errors.key}
         onChange={(key) => setValues((current) => ({ ...current, key }))}
         ref={keyRef}
@@ -221,7 +221,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         title="Owner App/Webapp"
         placeholder="General, Safari, Gmail, Raycast"
         info="Type an owner. Existing owner names are reused automatically; blank saves as General."
-        defaultValue={initialValues.ownerName}
+        value={values.ownerName}
         error={errors.ownerName}
         onChange={(ownerName) =>
           setValues((current) => ({
@@ -237,7 +237,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         id="scope"
         title="Scope"
         info="Scope controls the colored scope bubble shown in search results."
-        defaultValue={initialValues.scope}
+        value={values.scope}
         error={errors.scope}
         onChange={(scope) =>
           setValues((current) => ({ ...current, scope: scope as ShortcutFormValues["scope"] }))
@@ -272,7 +272,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         id="notes"
         title="Notes"
         placeholder="Optional context, caveats, or where this shortcut is configured."
-        defaultValue={initialValues.notes}
+        value={values.notes}
         onChange={(notes) => setValues((current) => ({ ...current, notes }))}
         ref={notesRef}
       />
