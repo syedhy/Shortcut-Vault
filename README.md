@@ -1,214 +1,78 @@
 # Shortcut Vault
 
-Shortcut Vault is a Raycast extension for searching, saving, importing, exporting, and managing keyboard shortcuts for macOS apps and webapps.
+**Shortcut Vault** is a local-first Raycast extension for searching, saving, managing, importing, and exporting keyboard shortcuts for macOS applications and webapps.
 
-It is designed as a local-first shortcut library that feels fast, native, lightweight, and suitable for future Raycast Store publication.
+It comes pre-loaded with **530 default shortcuts** across 18 popular applications and webapps, while providing a personal vault for your custom shortcuts.
 
-Shortcut Vault does not use accounts, authentication, subscriptions, sync, cloud storage, remote APIs, scraping, or AI features.
+---
 
 ## Features
 
-- Search default and custom shortcuts together.
-- Filter shortcut results by source, scope, or owner.
-- Search only bundled default shortcuts.
-- Search only user-created custom shortcuts.
-- Add custom shortcuts with modifier selectors and a live preview.
-- Manage custom shortcuts with edit, duplicate, and delete actions.
-- Confirm before saving duplicate custom shortcuts for the same owner, scope, and key.
-- Copy shortcut keys with Enter from search results.
-- Copy command names or full shortcut summaries.
-- View shortcut details and source URLs when available.
-- Export custom shortcuts as versioned JSON.
-- Import Shortcut Vault JSON after reviewing the supported format.
+- ⚡ **Instant Search**: Search bundled default shortcuts and personal custom shortcuts together with zero latency.
+- 🎯 **Filter Dropdown**: Filter results directly in the search bar by **Source** (Default, Custom), **Scope** (Global, App, Webapp), or **Owner App**.
+- 🔍 **Smart Symbol & Key Matching**: Search by modifier aliases (`cmd`, `opt`, `ctrl`, `shift`), key names (`right`, `escape`, `return`, `space`, `+`), or action names (`new tab`, `format code`).
+- ➕ **Add Custom Shortcuts**: Save shortcuts with modifier pickers, live display preview, owner canonicalization, and duplicate detection.
+- ✏️ **Manage Shortcuts**: Edit, duplicate (`⌘D`), or delete (`⌘Backspace`) custom shortcuts.
+- 📋 **One-Tap Actions**: Press `Enter` to copy shortcut keys immediately. Copy full summaries or command names with action panel options.
+- 📦 **Import & Export**: Backup and transfer custom shortcuts using a clean, versioned JSON format.
+- 🔒 **Local-First & Private**: Runs 100% locally with Raycast `LocalStorage`. No accounts, telemetry, tracking, or background network requests.
+
+---
+
+## Bundled Shortcut Library
+
+Shortcut Vault includes verified default shortcut databases for 18 popular macOS applications and webapps:
+
+- **macOS System & Apps**: macOS, Finder, Safari, Calendar, Mail, Notes, Reminders, App Store, Freeform, Terminal, Xcode.
+- **Developer & Productivity Tools**: Raycast, VS Code, Slack, Notion, Chrome, Figma, Gmail.
+
+---
 
 ## Commands
 
 ### Search Shortcuts
-
-The primary Shortcut Vault experience. Searches bundled default shortcuts and local custom shortcuts together.
-
-Press Enter on any result to copy the shortcut keys immediately.
-
-Use the filter dropdown to narrow results by source, scope, or owner without leaving the search list.
-
-Search supports chained terms. For example, `Figma custom cmd p` finds custom Figma shortcuts using Command + P, and `Safari app new tab` narrows by owner, scope, and command text.
+The primary search experience. Combines bundled default shortcuts and your custom shortcuts into a unified list.
+- Press **Enter** on any result to copy the shortcut keys immediately.
+- Use the filter dropdown (`Accessory`) to narrow by owner, scope, or source.
 
 ### Search Default Shortcuts
-
-Searches only the bundled shortcut database.
-
-Phase 1 includes:
-
-- Finder
-- Safari
-- Raycast
-- VS Code
-- Gmail Webapp
-
-Expanded bundled coverage includes:
-
-- App Store
-- Calendar
-- Chrome
-- Figma
-- Freeform
-- macOS
-- Mail
-- Notion
-- Notes
-- Reminders
-- Slack
-- Terminal
-- Xcode
+Search only the bundled database of 530+ shortcuts.
 
 ### Search Custom Shortcuts
-
-Searches only shortcuts saved by the user.
+Search only shortcuts created or imported by you.
 
 ### Add Shortcut
-
-Creates a custom shortcut with:
-
+Save a new custom shortcut with:
 - Command name
-- Modifier selectors
-- Key
-- Optional owner app/webapp, saved as General when left blank
-- Scope
-- Optional notes
-
-Typed owner names are canonicalized when they match an existing owner, so `figma` saves as `Figma` instead of creating a second owner spelling. The form shows a non-interactive owner match preview before saving. If the owner does not exist yet, Shortcut Vault saves it as a new owner.
-
-If the same shortcut already exists for the same owner and scope, Shortcut Vault asks before saving the duplicate.
+- Interactive modifier selectors (`⌘`, `⌥`, `⌃`, `⇧`, `fn`)
+- Key name
+- Owner App / Webapp (defaults to *General* if left blank)
+- Scope (*Global*, *App*, *Webapp*)
+- Context notes
 
 ### Manage Custom Shortcuts
-
-Lists custom shortcuts and supports:
-
-- Edit
-- Duplicate
-- Delete with confirmation
+View and manage your saved shortcuts with quick actions:
+- **Edit**: Modify shortcut details.
+- **Duplicate (`⌘D`)**: Create a copy of an existing shortcut.
+- **Delete (`⌘Backspace`)**: Remove a shortcut with confirmation.
 
 ### Export Shortcuts
-
-Exports custom shortcuts as a versioned JSON file under Raycast extension support storage and offers a copy-to-clipboard action.
+Export custom shortcuts to a versioned JSON file under Raycast support storage or copy the JSON payload directly to your clipboard.
 
 ### Import Shortcuts
+Import custom shortcuts from a Shortcut Vault JSON file. Validates format, version, and required fields before saving.
 
-Starts with an information page that explains the supported format, validation rules, version compatibility, and example JSON. The file picker opens only after choosing Import JSON.
+---
 
-## Screenshots
+## Import / Export JSON Format
 
-Final store screenshots should be captured from the real Raycast UI before submission.
-
-Use Raycast Window Capture and save the final images to the extension metadata folder when preparing the store PR.
-
-## Installation
-
-```bash
-npm install
-npm run dev
-```
-
-Then open Raycast and run one of the Shortcut Vault commands.
-
-## Development
-
-```bash
-npm run validate-data
-npm run generate-data
-npm run typecheck
-npm run lint
-npm run build
-npm run verify
-```
-
-`npm run build` runs the Raycast production build validation with `ray build -e dist`.
-`npm run validate-data` checks every bundled shortcut database for required fields, supported values, and duplicate IDs before generated data is written.
-`npm run verify` runs the production readiness checks without test-only source files.
-
-This project intentionally does not include GitHub Actions, CI/CD workflows, release automation, deployment pipelines, or publish scripts.
-
-The extension keeps dependencies minimal and avoids unused runtime packages.
-
-## Data Architecture
-
-Default shortcut databases live in:
-
-```text
-src/data/default-shortcuts/
-```
-
-Each JSON file describes one owner and its shortcuts. A build-time generator reads every JSON file in that folder and writes:
-
-```text
-src/data/generated-default-shortcuts.ts
-```
-
-The UI and search logic consume the generated dataset through the shared data layer. Adding a new default database should only require adding a JSON file and running:
-
-```bash
-npm run generate-data
-```
-
-The generator runs database validation first, so invalid shortcut files fail fast before they reach the extension bundle.
-
-The bundled database currently contains 530 default shortcuts across 18 owners.
-
-## Adding New Shortcut Databases
-
-Create a new JSON file under `src/data/default-shortcuts/`.
-
-Example:
-
-```json
-{
-  "ownerName": "Example App",
-  "ownerType": "mac-app",
-  "sourceUrl": "https://example.com/shortcuts",
-  "shortcuts": [
-    {
-      "id": "new-tab",
-      "commandName": "New Tab",
-      "modifiers": ["command"],
-      "key": "T",
-      "scope": "app"
-    }
-  ]
-}
-```
-
-Supported owner types:
-
-- `mac-app`
-- `webapp`
-- `system`
-- `other` for General or uncategorized owners
-
-Supported scopes:
-
-- `global`
-- `app`
-- `webapp`
-
-Scope describes where the shortcut works: `global` works anywhere on the Mac, `app` works inside the owner app, and `webapp` works inside the owner webapp. Scope does not decide the owner type.
-
-Supported modifiers:
-
-- `command`
-- `option`
-- `control`
-- `shift`
-- `fn`
-
-## Import/Export Format
-
-Shortcut Vault uses a versioned JSON envelope.
+Custom shortcuts are exported and imported using a clean JSON envelope:
 
 ```json
 {
   "format": "shortcut-vault",
   "version": 1,
-  "exportedAt": "2026-07-04T00:00:00.000Z",
+  "exportedAt": "2026-07-28T00:00:00.000Z",
   "shortcuts": [
     {
       "id": "example-custom-shortcut",
@@ -221,182 +85,59 @@ Shortcut Vault uses a versioned JSON envelope.
       "scope": "app",
       "notes": "Example custom shortcut.",
       "sourceType": "custom",
-      "createdAt": "2026-07-04T00:00:00.000Z",
-      "updatedAt": "2026-07-04T00:00:00.000Z"
+      "createdAt": "2026-07-28T00:00:00.000Z",
+      "updatedAt": "2026-07-28T00:00:00.000Z"
     }
   ]
 }
 ```
 
-Imports validate:
+---
 
-- Top-level structure
-- Format
-- Version
-- Required shortcut fields
-- Timestamp fields
-- Modifier values
-- Owner type
-- Scope
-- Source type
+## Privacy & Local Storage
 
-If an imported shortcut ID conflicts with an existing custom shortcut, Shortcut Vault generates a new ID and preserves the imported shortcut.
-Duplicate IDs within the same import file are also regenerated safely.
+All custom shortcuts are stored on your Mac using Raycast `LocalStorage`.
 
-## Local Storage
+Shortcut Vault performs no automatic network calls, telemetry, or remote data sync.
 
-Custom shortcuts are stored locally using Raycast `LocalStorage`.
+---
 
-Shortcut Vault has no automatic telemetry, accounts, sync, cloud storage, or network API calls. Users can optionally open source links and export or copy their own shortcut data.
+## Development & Contribution
 
-## Assets
+### Local Setup
 
-The extension icon is wired to:
+```bash
+# Install dependencies
+npm install
 
-- `icon.png`
+# Run development mode in Raycast
+npm run dev
+```
 
-## Final Store Handoff
+### Verification & Build
 
-Development is complete up to the point where human-provided store assets and publishing credentials are needed.
+```bash
+# Validate dataset JSON files
+npm run validate-data
 
-Before submission:
+# Typecheck TypeScript
+npm run typecheck
 
-- Run `npm install` if dependencies are not installed.
-- Run `npm run validate-data`.
-- Run `npm run typecheck`.
-- Run `npm run lint`.
-- Run `npm run build`.
-- Run `npm run verify`.
-- Run `npm run dev` and manually check each command in Raycast.
-- Capture real screenshots with Raycast Window Capture.
-- Save final screenshots to Raycast metadata when preparing the store submission.
-- Review `assets/icon.png` in light and dark Raycast appearances.
-- Publish through Raycast's store flow when ready.
+# Run unit tests
+npm run test
 
-## Roadmap
+# Lint & format check
+npm run lint
 
-### Phase 1
+# Build extension dist
+npm run build
 
-- Architecture and MVP.
-- Search default and custom shortcuts.
-- Add and manage custom shortcuts.
-- Import and export custom shortcuts.
-- Default databases for Finder, Safari, Raycast, VS Code, and Gmail.
+# Run complete verification pipeline
+npm run verify
+```
 
-### Phase 2
+---
 
-- UX consistency review.
-- Accessibility review.
-- Empty state and error handling polish.
-- Validation and copy review.
-- README and metadata readiness pass.
+## License
 
-### Phase 3
-
-- Added shortcut databases for Chrome, Figma, Notion, Slack, Terminal, and Xcode.
-- Expanded bundled coverage to 11 owners and 76 default shortcuts.
-- Preserved the JSON-first data architecture.
-
-### Phase 4
-
-- Added data validation for bundled shortcut JSON files.
-- Cached normalized default shortcuts for snappier default search.
-- Hardened export filenames and stored shortcut parsing.
-
-### Phase 5
-
-- Polished the Add Shortcut form with native Raycast affordances.
-- Kept screenshot replacement deferred until real user-provided captures are available.
-
-### Phase 6
-
-- Simplified the Add Shortcut preview row to show only the shortcut preview.
-
-### Phase 7
-
-- Adjusted the icon mask to a balanced rounded-square shape.
-
-### Phase 8
-
-- Added native list filtering by source, scope, and owner.
-- Kept Search -> Enter -> Copy Shortcut as the primary workflow.
-
-### Phase 9
-
-- Saved blank custom shortcut owners as General.
-- Updated Add Shortcut copy to make general shortcuts clearer.
-
-### Phase 10
-
-- Added focused import/export format tests.
-- Extracted import/export validation into a pure module.
-- Hardened import validation for timestamp fields and fallback shortcut displays.
-
-### Phase 11
-
-- Audited the extension against the original product prompt.
-- Added duplicate custom shortcut confirmation.
-- Removed an unused dependency.
-
-### Phase 12
-
-- Fixed shortcut list search by restoring native Raycast filtering.
-
-### Phase 13
-
-- Added robust chained shortcut search.
-- Added existing-owner selection and owner canonicalization in Add/Edit Shortcut.
-
-### Phase 14
-
-- Hardened import duplicate ID preparation.
-- Added tests for existing conflicts, in-file duplicate IDs, and generated-ID retries.
-
-### Phase 15
-
-- Simplified Add/Edit Shortcut owner entry back to one field.
-- Kept existing-owner canonicalization without a separate owner selector.
-
-### Phase 16
-
-- Reworked existing-owner feedback.
-- Superseded in Phase 17 after the token-style preview proved too interactive-looking.
-
-### Phase 17
-
-- Replaced the owner token with non-interactive preview text.
-- Hardened empty export and empty import behavior.
-- Avoided imported ID collisions with bundled default shortcuts.
-- Added final store-readiness docs, license, and changelog.
-
-### Phase 18
-
-- Clarified that scope describes where a shortcut works, not what owns it.
-- Stopped showing owner kind in the Add/Edit owner match preview.
-- Treated named global custom shortcuts as app-owned shortcuts instead of generic Other shortcuts.
-
-### Phase 19
-
-- Expanded the bundled default library to 215 shortcuts across 18 owners.
-- Added official Apple/macOS shortcut datasets for macOS, Mail, Calendar, Notes, Reminders, App Store, and Freeform.
-- Made owner/app name tags use one consistent muted color.
-- Capped broad search rendering for snappier scrolling while preserving full-library search.
-
-### Phase 20
-
-- Pruned test-only files and placeholder/source-only assets from the production tree.
-- Kept data generation and validation scripts as production database safeguards.
-- Added a single `npm run verify` command for local release-readiness checks.
-
-### Phase 21
-
-- Fixed TypeScript module resolution deprecation by using modern `ESNext` modules with bundler resolution.
-- Expanded official-source coverage for Chrome, Finder, Safari, Terminal, Xcode, VS Code, Gmail, Slack, Notion, Figma, and Raycast.
-- Expanded the bundled default library to 530 shortcuts across 18 owners.
-- Improved symbol search for shortcuts using keys like `?`, `#`, brackets, quotes, and grave accent.
-
-### Phase 22
-
-- Production readiness audit across code quality, error handling, performance, Raycast Store standards, and automated test suite.
-- Enhanced search normalization to support arrow symbol key matching (`→` to `right`, `←` to `left`, `↑` to `up`, `↓` to `down`) and key alias matching (`esc`/`escape`, `enter`/`return`, `backspace`/`delete`).
-- Verified full `npm run verify` pipeline passes with 100% clean ESLint, Prettier formatting, TypeScript checking, unit tests, and Raycast extension build.
+[MIT](LICENSE) © Hyder
