@@ -245,9 +245,9 @@ Duplicate IDs within the same import file are also regenerated safely.
 
 ## Local Storage
 
-Custom shortcuts are stored locally with Raycast `LocalStorage`.
+Custom shortcuts are stored locally using Raycast `LocalStorage`.
 
-No data leaves the user's machine.
+Shortcut Vault has no automatic telemetry, accounts, sync, cloud storage, or network API calls. Users can optionally open source links and export or copy their own shortcut data.
 
 ## Assets
 
@@ -394,3 +394,9 @@ Before submission:
 - Expanded official-source coverage for Chrome, Finder, Safari, Terminal, Xcode, VS Code, Gmail, Slack, Notion, Figma, and Raycast.
 - Expanded the bundled default library to 530 shortcuts across 18 owners.
 - Improved symbol search for shortcuts using keys like `?`, `#`, brackets, quotes, and grave accent.
+
+### Phase 22
+
+- Production readiness audit across code quality, error handling, performance, Raycast Store standards, and automated test suite.
+- Enhanced search normalization to support arrow symbol key matching (`→` to `right`, `←` to `left`, `↑` to `up`, `↓` to `down`) and key alias matching (`esc`/`escape`, `enter`/`return`, `backspace`/`delete`).
+- Verified full `npm run verify` pipeline passes with 100% clean ESLint, Prettier formatting, TypeScript checking, unit tests, and Raycast extension build.

@@ -1,6 +1,8 @@
 import type { Shortcut } from "../types/shortcut";
 import { OWNER_TYPE_LABELS, SCOPE_LABELS, SOURCE_LABELS } from "./labels";
 
+const searchIndexCache = new WeakMap<Shortcut, string[]>();
+
 export function searchShortcuts(shortcuts: Shortcut[], query: string): Shortcut[] {
   const terms = tokenizeSearchQuery(query);
 
@@ -9,7 +11,7 @@ export function searchShortcuts(shortcuts: Shortcut[], query: string): Shortcut[
   }
 
   return shortcuts.filter((shortcut) => {
-    const index = buildShortcutSearchIndex(shortcut);
+    const index = getShortcutSearchIndex(shortcut);
     return terms.every((term) => index.some((value) => matchesSearchTerm(value, term)));
   });
 }
@@ -20,6 +22,17 @@ export function tokenizeSearchQuery(query: string): string[] {
     .split(" ")
     .map((term) => term.trim())
     .filter((term) => term && term !== "plus");
+}
+
+function getShortcutSearchIndex(shortcut: Shortcut): string[] {
+  const cached = searchIndexCache.get(shortcut);
+  if (cached) {
+    return cached;
+  }
+
+  const index = buildShortcutSearchIndex(shortcut);
+  searchIndexCache.set(shortcut, index);
+  return index;
 }
 
 function buildShortcutSearchIndex(shortcut: Shortcut): string[] {
@@ -60,6 +73,10 @@ function normalizeSearchValue(value: string): string {
     .replaceAll("]", " right bracket ")
     .replaceAll("-", " minus ")
     .replaceAll("=", " equals ")
+    .replaceAll("→", " right arrow ")
+    .replaceAll("←", " left arrow ")
+    .replaceAll("↑", " up arrow ")
+    .replaceAll("↓", " down arrow ")
     .replace(/\bcmd\b/g, "command")
     .replace(/\bcommand\b/g, "command")
     .replace(/\bopt\b/g, "option")
@@ -70,7 +87,13 @@ function normalizeSearchValue(value: string): string {
     .replace(/\bcontrol\b/g, "control")
     .replace(/\bshift\b/g, "shift")
     .replace(/\bfn\b/g, "fn")
-    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\besc\b/g, "esc escape")
+    .replace(/\bescape\b/g, "esc escape")
+    .replace(/\breturn\b/g, "return enter")
+    .replace(/\benter\b/g, "return enter")
+    .replace(/\bdel\b/g, "delete backspace")
+    .replace(/\bbackspace\b/g, "delete backspace")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
     .trim()
     .replace(/\s+/g, " ");
 }

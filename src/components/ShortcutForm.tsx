@@ -40,6 +40,7 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
   const [errors, setErrors] = useState<FormErrors>({});
   const [ownerOptions, setOwnerOptions] = useState<ShortcutOwnerOption[]>([]);
   const [formResetKey, setFormResetKey] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const commandNameRef = useRef<Form.TextField>(null);
   const modifiersRef = useRef<Form.TagPicker>(null);
   const keyRef = useRef<Form.TextField>(null);
@@ -70,29 +71,34 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
   }, [refreshOwnerOptions]);
 
   async function handleSubmit(formValues: Form.Values) {
-    const nextSubmittedValues = getCanonicalOwnerValues(
-      getSubmittedFormValues(formValues, values),
-      ownerOptions,
-    );
-    const nextPreview = formatShortcutDisplay(
-      nextSubmittedValues.modifiers,
-      nextSubmittedValues.key,
-    );
-    const nextOwnerPreview = nextSubmittedValues.ownerName.trim() || GENERAL_OWNER_NAME;
-    const nextErrors = validateShortcutForm(nextSubmittedValues);
-    setErrors(nextErrors);
-    setValues(nextSubmittedValues);
-
-    if (hasFormErrors(nextErrors)) {
-      await showToast({
-        style: Toast.Style.Failure,
-        title: "Shortcut needs attention",
-        message: "Review the highlighted fields.",
-      });
+    if (isSubmitting) {
       return;
     }
 
+    setIsSubmitting(true);
     try {
+      const nextSubmittedValues = getCanonicalOwnerValues(
+        getSubmittedFormValues(formValues, values),
+        ownerOptions,
+      );
+      const nextPreview = formatShortcutDisplay(
+        nextSubmittedValues.modifiers,
+        nextSubmittedValues.key,
+      );
+      const nextOwnerPreview = nextSubmittedValues.ownerName.trim() || GENERAL_OWNER_NAME;
+      const nextErrors = validateShortcutForm(nextSubmittedValues);
+      setErrors(nextErrors);
+      setValues(nextSubmittedValues);
+
+      if (hasFormErrors(nextErrors)) {
+        await showToast({
+          style: Toast.Style.Failure,
+          title: "Shortcut needs attention",
+          message: "Review the highlighted fields.",
+        });
+        return;
+      }
+
       const duplicate = await findDuplicateCustomShortcut(nextSubmittedValues, shortcut?.id);
       if (duplicate) {
         const confirmed = await confirmAlert({
@@ -137,12 +143,15 @@ export function ShortcutForm({ shortcut, onSaved }: Props) {
         title: "Could not save shortcut",
         message: error instanceof Error ? error.message : "Review the fields and retry.",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
   return (
     <Form
       key={isEditing ? shortcut?.id : formResetKey}
+      isLoading={isSubmitting}
       navigationTitle={isEditing ? "Edit Shortcut" : "Add Shortcut"}
       actions={
         <ActionPanel>
@@ -309,10 +318,11 @@ function getSubmittedFormValues(
   formValues: Form.Values,
   fallbackValues: ShortcutFormValues,
 ): ShortcutFormValues {
+  const rawKey = getStringFormValue(formValues.key, fallbackValues.key);
   return {
     commandName: getStringFormValue(formValues.commandName, fallbackValues.commandName),
     modifiers: getModifierFormValues(formValues.modifiers, fallbackValues.modifiers),
-    key: getStringFormValue(formValues.key, fallbackValues.key),
+    key: rawKey === " " ? "Space" : rawKey,
     ownerName: getStringFormValue(formValues.ownerName, fallbackValues.ownerName),
     ownerType: fallbackValues.ownerType,
     scope: getScopeFormValue(formValues.scope, fallbackValues.scope),

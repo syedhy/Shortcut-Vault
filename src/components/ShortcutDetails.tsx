@@ -1,6 +1,7 @@
 import { Action, ActionPanel, Detail } from "@raycast/api";
 import type { Shortcut } from "../types/shortcut";
 import { OWNER_TYPE_LABELS, SCOPE_LABELS, SOURCE_LABELS } from "../lib/labels";
+import { escapeMarkdown } from "../lib/markdown";
 import { getFullShortcutText } from "../lib/shortcut-format";
 
 type Props = {
@@ -9,11 +10,11 @@ type Props = {
 
 export function ShortcutDetails({ shortcut }: Props) {
   const markdown = [
-    `# ${shortcut.commandName}`,
+    `# ${escapeMarkdown(shortcut.commandName)}`,
     "",
     `## ${shortcut.shortcutDisplay}`,
     "",
-    `**Owner:** ${shortcut.ownerName}`,
+    `**Owner:** ${escapeMarkdown(shortcut.ownerName)}`,
     "",
     `**Owner Kind:** ${OWNER_TYPE_LABELS[shortcut.ownerType]}`,
     "",
@@ -21,7 +22,7 @@ export function ShortcutDetails({ shortcut }: Props) {
     "",
     `**Source:** ${SOURCE_LABELS[shortcut.sourceType]}`,
     "",
-    shortcut.notes ? `**Notes:** ${shortcut.notes}` : undefined,
+    shortcut.notes ? `**Notes:** ${escapeMarkdown(shortcut.notes)}` : undefined,
     shortcut.sourceUrl ? `**Source URL:** ${shortcut.sourceUrl}` : undefined,
   ]
     .filter(Boolean)

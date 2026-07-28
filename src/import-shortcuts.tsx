@@ -9,6 +9,7 @@ import {
   showToast,
   useNavigation,
 } from "@raycast/api";
+import { useState } from "react";
 import { EXAMPLE_EXPORT, EXPORT_VERSION, importShortcuts } from "./lib/import-export";
 
 const exampleJson = JSON.stringify(EXAMPLE_EXPORT, null, 2);
@@ -117,8 +118,13 @@ export default function Command() {
 
 function ImportForm() {
   const { pop } = useNavigation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(values: { file: string[] }) {
+    if (isSubmitting) {
+      return;
+    }
+
     const filePath = values.file[0];
 
     if (!filePath) {
@@ -130,6 +136,7 @@ function ImportForm() {
       return;
     }
 
+    setIsSubmitting(true);
     const toast = await showToast({ style: Toast.Style.Animated, title: "Importing shortcuts" });
 
     try {
@@ -144,11 +151,14 @@ function ImportForm() {
       toast.style = Toast.Style.Failure;
       toast.title = "Import failed";
       toast.message = error instanceof Error ? error.message : "Check the file and try again.";
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
   return (
     <Form
+      isLoading={isSubmitting}
       navigationTitle="Import JSON"
       actions={
         <ActionPanel>

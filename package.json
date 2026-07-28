@@ -4,7 +4,7 @@
   "title": "Shortcut Vault",
   "description": "Search, save, import, export, and manage keyboard shortcuts locally.",
   "icon": "icon.png",
-  "author": "hyder",
+  "author": "syed_hyder",
   "categories": [
     "Productivity"
   ],
@@ -71,10 +71,12 @@
     "lint": "ray lint",
     "fix-lint": "ray lint --fix",
     "typecheck": "npm run generate-data && tsc --noEmit",
-    "verify": "npm run validate-data && npm run typecheck && npm run lint && npm run build"
+    "test": "tsc -p tsconfig.test.json && node .tmp/test-build/scripts/test-import-export-format.js && node .tmp/test-build/scripts/test-shortcut-search.js && node .tmp/test-build/scripts/test-serial-task-queue.js",
+    "publish": "npx @raycast/api@latest publish",
+    "verify": "npm run validate-data && npm run typecheck && npm run test && npm run lint && npm run build"
   },
   "dependencies": {
-    "@raycast/api": "^1.104.21"
+    "@raycast/api": "^1.104.23"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^2.2.0",

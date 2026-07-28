@@ -111,7 +111,11 @@ export default function Command() {
             </ActionPanel.Section>
           ) : (
             <ActionPanel.Section title="Create">
-              <Action.Push title="Add Shortcut" icon={Icon.Plus} target={<ShortcutForm />} />
+              <Action.Push
+                title="Add Shortcut"
+                icon={Icon.Plus}
+                target={<ShortcutForm onSaved={() => void refreshCount()} />}
+              />
             </ActionPanel.Section>
           )}
         </ActionPanel>

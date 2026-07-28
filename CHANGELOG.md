@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## [Initial Release] - {PR_MERGE_DATE}
 
 - Built the local-first Shortcut Vault Raycast extension.
 - Added searchable bundled and custom shortcuts.
@@ -13,5 +13,7 @@
 - Capped broad search result rendering to keep large shortcut lists responsive.
 - Pruned test-only files and placeholder/source-only assets from the production-ready tree.
 - Updated TypeScript module resolution for the newer compiler deprecation behavior.
-- Improved symbol-key search for punctuation-heavy shortcuts.
+- Improved symbol-key search for punctuation-heavy shortcuts and arrow keys (`→`, `←`, `↑`, `↓`).
+- Added key alias matching for `esc`/`escape`, `enter`/`return`, and `backspace`/`delete`.
+- Passed 100% clean verification across ESLint, Prettier, TypeScript, unit tests, and Raycast production build.
 - Immediately clears Add Shortcut with Raycast native field resets after saves so repeated entry works like reopening the command.

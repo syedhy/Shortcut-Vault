@@ -37,6 +37,7 @@ const ACTIVE_SEARCH_RESULT_LIMIT = 120;
 export function ShortcutList({ filter, intent = "search" }: Props) {
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | undefined>();
   const [searchText, setSearchText] = useState("");
   const [viewFilter, setViewFilter] = useState<ViewFilterValue>("all");
 
@@ -44,14 +45,17 @@ export function ShortcutList({ filter, intent = "search" }: Props) {
     setIsLoading(true);
     try {
       setShortcuts(await getShortcuts(filter));
+      setLoadError(undefined);
     } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Open Shortcut Vault again after checking storage.";
+      setLoadError(message);
       await showToast({
         style: Toast.Style.Failure,
         title: "Could not load shortcuts",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Open Shortcut Vault again after checking storage.",
+        message,
       });
     } finally {
       setIsLoading(false);
@@ -90,6 +94,13 @@ export function ShortcutList({ filter, intent = "search" }: Props) {
   const hasActiveViewFilter = viewFilter !== "all";
 
   const emptyState = useMemo(() => {
+    if (loadError) {
+      return {
+        title: "Could not load shortcuts",
+        description: loadError,
+      };
+    }
+
     if (searchText.trim()) {
       return {
         title: "No shortcuts found",
@@ -128,13 +139,15 @@ export function ShortcutList({ filter, intent = "search" }: Props) {
     filter,
     hasActiveViewFilter,
     intent,
+    loadError,
     searchText,
   ]);
 
   const canAddShortcut = filter !== "default";
   const emptyActions =
-    canAddShortcut || hasActiveViewFilter ? (
+    loadError || canAddShortcut || hasActiveViewFilter ? (
       <ActionPanel>
+        {loadError ? <Action title="Retry" icon={Icon.Redo} onAction={refresh} /> : null}
         {hasActiveViewFilter ? (
           <Action
             title="Show All Results"
