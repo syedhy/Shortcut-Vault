@@ -62,12 +62,22 @@ class CrossProcessMutex {
       return await task();
     } finally {
       clearInterval(heartbeat);
-      try {
-        if (fs.existsSync(this.lockFile)) fs.unlinkSync(this.lockFile);
-        if (fs.existsSync(this.lockDir)) fs.rmdirSync(this.lockDir);
-      } catch {
-        // Ignore cleanup errors
+      this.releaseIfOwned();
+    }
+  }
+
+  private releaseIfOwned(): void {
+    try {
+      const content = fs.readFileSync(this.lockFile, "utf-8");
+      const ownerPid = parseInt(content.split(":")[0] ?? "", 10);
+      if (ownerPid !== process.pid) {
+        // Lock was reclaimed by another process — do not touch it
+        return;
       }
+      fs.unlinkSync(this.lockFile);
+      fs.rmdirSync(this.lockDir);
+    } catch {
+      // Lock was already released or never fully acquired — nothing to clean up
     }
   }
 
